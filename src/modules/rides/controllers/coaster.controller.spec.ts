@@ -13,10 +13,4 @@ describe('CoasterController', () => {
 
     coasterController = app.get<CoasterController>(CoasterController);
   });
-
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(coasterController.getHello()).toBe('Hello World!');
-    });
-  });
 });
