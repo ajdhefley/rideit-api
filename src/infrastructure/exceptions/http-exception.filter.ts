@@ -3,11 +3,13 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logge
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
     catch(error: any, host: ArgumentsHost) {
+        const status = error instanceof HttpException ? error.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+
         host.switchToHttp()
             .getResponse()
-            .status(error instanceof HttpException ? error.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR)
+            .status(status)
             .json({ message: error.message });
 
-        Logger.error(`Status: ${error.getStatus() || error.name} | ${error.stack}`);
+        Logger.error(`Status: ${status} | ${error.stack}`);
     }
 }
