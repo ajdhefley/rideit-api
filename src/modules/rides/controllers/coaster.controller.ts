@@ -1,6 +1,5 @@
 import { Controller, Get, Param, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { Coaster } from '../models/coaster.model';
 import { CoasterService } from '../services/coaster.service';
 
 @Controller('coasters')
@@ -13,9 +12,10 @@ export class CoasterController {
     return res.json(result);
   }
 
-  @Get(':id')
+  @Get(':url')
   async getCoaster(@Req() req: Request, @Res() res: Response, @Param() params) {
-    const result = await this.coasterService.getCoaster(params.id);
-    return res.json(result);
+    const coaster = await this.coasterService.getCoasterByUrl(params.url);
+    coaster.ImgList = await this.coasterService.getCoasterImages(coaster.CoasterId);
+    return res.json(coaster);
   }
 }
