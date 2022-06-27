@@ -8,5 +8,7 @@
   "dependencies": {
     "mysql": "^2.18.1",
     "puppeteer": "^14.3.0"
+  },
+  "devDependencies": {
   }
 }

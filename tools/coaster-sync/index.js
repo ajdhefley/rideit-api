@@ -4,6 +4,7 @@
 
 const mysql     = require('mysql');
 const puppeteer = require('puppeteer');
+const { executeQuery } = require('../../utilities/db');
 
 const BaseUrl = 'https://rcdb.com/r.htm?ex=on&st=93&ol=1&ot=2&cs=277';
 const Connection = mysql.createConnection({
@@ -31,6 +32,30 @@ async function runSync() {
     browser.close();
 }
 
+async function getDetailsImages(driver, link) {
+    const urlList = [];
+    const picLinks = await driver.evaluate(() => {
+        return Object.values(document.querySelectorAll('.pic-strip a'));
+    });
+
+    for (let i = 1; i <= Math.min(picLinks.length, 5); i++) {
+        await driver.click(`.pic-strip a:nth-child(${i})`);
+
+        const url = await driver.evaluate(() => {
+            const bg = window.getComputedStyle(document.body)['background-image'];
+            const start = bg.indexOf('url("');
+            const end = bg.indexOf('"),');
+            const url = bg.substring(start+5, end);
+            return url;
+        });
+        urlList.push(url);
+
+        await driver.goto(link);
+    }
+
+    return urlList;
+}
+
 async function runSearchResultsPage(driver, pageNum) {
     await driver.goto(`${BaseUrl}&page=${pageNum}`);
 
@@ -42,9 +67,7 @@ async function runSearchResultsPage(driver, pageNum) {
 
     for (let url of urlList) {
         await driver.waitForTimeout(100);
-        const coasterDetails = await runDetailsPage(driver, url);
-        await saveDetails(coasterDetails);
-        console.log(coasterDetails);
+        await runDetailsPage(driver, url);
     }
 }
 
@@ -93,23 +116,76 @@ async function runDetailsPage(driver, link) {
         const inversions = inversionsElem[0] ? inversionsElem[0].innerText.replace(/,/g, '') : null;
 
         const openingDateElem = document.querySelector('#feature > p > time');
-        const openingDate = openingDateElem?.innerText; 
+        const openingDate = openingDateElem?.innerText;
 
-        return { name, park, type, model, manufacturer, length, height, drop, speed, inversions, openingDate };
+        const trainInfoElem = getElementsByXPath('//*[contains(text(), "Riders are arranged")]')[0];
+        const trainInfo = trainInfoElem?.innerText;
+        const numCars = trainInfo ? trainInfo.split('cars')[0].split(' ').at(-2) : null;
+        const singleRow = trainInfo ? trainInfo.split('single row').length > 1 : false;
+        const numSeatsPerRow = trainInfo ? trainInfo.split('Riders are arranged')[1].split(' ')[1] : null;
+        const numRowsPerCar = trainInfo ? (singleRow ? 1 : trainInfo.split('rows')[0].split(' ').at(-2)) : null;
+
+        let numInsideSeatsPerRow = numSeatsPerRow;
+        let numOutsideSeatsPerRow = numSeatsPerRow ? 0 : null;
+
+        if (model === 'Wing Coaster') {
+            if (manufacturer === 'Bolliger & Mabillard') {
+                numInsideSeatsPerRow = 0;
+                numOutsideSeatsPerRow = numSeatsPerRow;
+            }
+            else if (manufacturer === 'Intamin') {
+                numInsideSeatsPerRow = numSeatsPerRow / 2;
+                numOutsideSeatsPerRow = numSeatsPerRow / 2;
+            }
+        }
+        
+        return { name, park, type, model, manufacturer, length, height, drop, speed, inversions, openingDate, numCars, numRowsPerCar, numInsideSeatsPerRow, numOutsideSeatsPerRow };
     });
 
-    return details;
+    const coasterId = await saveDetails(details);
+    const imageUrlList = await getDetailsImages(driver, link);
+    imageUrlList.forEach(async (imageUrl) => await saveImageUrl(coasterId, imageUrl));
 }
 
 async function clearDetails() {
-    const cmd = 'TRUNCATE Coasters';
+    await executeQuery(Connection, 'TRUNCATE Coasters');
+    await executeQuery(Connection, 'TRUNCATE CoasterImages');
+}
 
-    Connection.query(cmd, (error, results, fields) => {
-        if (error) throw error;
-    });
+async function saveImageUrl(coasterId, imageUrl) {
+    const cmd = `
+        INSERT INTO CoasterImages (
+            CoasterId,
+            ImageUrl
+        )
+        VALUES (
+            ${coasterId},
+            '${imageUrl}'
+        )
+    `;
+
+    try {
+        console.info(cmd);
+        await executeQuery(Connection, cmd);
+    }
+    catch (err) {
+        console.error(err);
+    }
 }
 
 async function saveDetails(details) {
+    const dashify = function(value) {
+        return value.toLowerCase()
+            .replace(/\./g, '')
+            .replace(/\,/g, '')
+            .replace(/\&/g, '')
+            .replace(/'/g, '')
+            .replace(/-/g, '')
+            .replace(/   /g, ' ')
+            .replace(/  /g, ' ')
+            .replace(/ /g, '-');
+    };
+
     const cmd = `
         INSERT INTO Coasters (
             Park,
@@ -124,7 +200,12 @@ async function saveDetails(details) {
             Inversions,
             ColorPrimary,
             ColorSecondary,
-            OpeningDate
+            OpeningDate,
+            Url,
+            CarsPerTrain,
+            RowsPerCar,
+            InsideSeatsPerRow,
+            OutsideSeatsPerRow
         )
         VALUES (
             ${details.park ? JSON.stringify(details.park) : 'NULL'},
@@ -137,17 +218,25 @@ async function saveDetails(details) {
             ${details.drop || 'NULL'},
             ${details.speed || 'NULL'},
             ${details.inversions || 0},
-            '#000000',
             '#ffffff',
-            '${details.openingDate}'
+            '#000000',
+            '${details.openingDate}',
+            '${dashify(details.name)}-${dashify(details.park)}',
+            ${isNaN(details.numCars) ? null : details.numCars},
+            ${isNaN(details.numRowsPerCar) ? null : details.numRowsPerCar},
+            ${isNaN(details.numInsideSeatsPerRow) ? null : details.numInsideSeatsPerRow},
+            ${isNaN(details.numOutsideSeatsPerRow) ? null : details.numOutsideSeatsPerRow}
         )
     `;
 
-    console.log(cmd);
-
-    Connection.query(cmd, (error, results, fields) => {
-        if (error) throw error;
-    });
+    try {
+        console.info(cmd);
+        const results = await executeQuery(Connection, cmd);
+        return results.insertId;
+    }
+    catch (err) {
+        console.error(err);
+    }
 }
 
 (async function() {
