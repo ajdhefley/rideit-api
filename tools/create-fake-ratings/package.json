@@ -1,0 +1,14 @@
+{
+  "name": "create-fake-ratings",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mysql": "^2.18.1",
+    "puppeteer": "^14.3.0"
+  },
+  "devDependencies": {
+  }
+}
