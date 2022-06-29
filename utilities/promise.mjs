@@ -1,4 +1,4 @@
-function promiseMap(array, func) {
+export function promiseMap(array, func) {
     let promiseArray = array.map((item) => new Promise(async (resolve, reject) => {
         try {
             const result = await func(item);
@@ -11,5 +11,3 @@ function promiseMap(array, func) {
 
     return Promise.all(promiseArray);
 }
-
-module.exports = { promiseMap }

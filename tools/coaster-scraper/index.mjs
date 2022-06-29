@@ -1,20 +1,56 @@
 /**
- * Scrapes and saves coaster data from RCDB.
+ * Searches RCDB for all coasters in North America. Scrapes data
+ * and up to five images by accessing details for each search result.
+ * 
+ * Flags:
+ *   page    = Which page to start on (say if previous run stopped prematurely and need to start tool later in the process)
+ *   noreset = If present, do not clear/reset the database first, add tool results to existing data.
+ *
+ * Examples:
+ *   node .
+ *   node . --page=10
+ *   node . --page=15 --noreset
  **/
 
-const mysql     = require('mysql');
-const puppeteer = require('puppeteer');
-const { executeQuery } = require('../../utilities/db');
+import mysql from 'mysql';
+import puppeteer from 'puppeteer';
+import minimist from 'minimist';
+import dotenv from 'dotenv';
+import { executeQuery } from '../../utilities/db.mjs';
 
+dotenv.config();
+
+/**
+ * Executes search with the following filters:
+ *   Existing       = true
+ *   Status         = Operating
+ *   Location       = North America
+ *   Type           = All (Steel & Wood)
+ *   Classification = Roller Coaster
+ **/
 const BaseUrl = 'https://rcdb.com/r.htm?ex=on&st=93&ol=1&ot=2&cs=277';
+
+/**
+ * Tool uses a single open connection.
+ **/
 const Connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'password',
-    database : 'ride'
+    host     : process.env.DB_HOST,
+    user     : process.env.DB_USER,
+    password : process.env.DB_PASSWORD,
+    database : 'CoasterRanker'
 });
 
-async function runSync() {
+/**
+ * Allows accessing arguments/flags by name instead of array index.
+ **/
+const Args = minimist(process.argv.slice(2));
+
+async function runCoasterScraper() {
+    if (!Args.noreset) {
+        await executeQuery(Connection, 'TRUNCATE Coasters');
+        await executeQuery(Connection, 'TRUNCATE CoasterImages');
+    }
+
     const browser = await puppeteer.launch({ headless: false });
     const driver = await browser.newPage();
 
@@ -26,55 +62,33 @@ async function runSync() {
     });
 
     for (let i = 1; i <= totalPages; i++) {
-        await runSearchResultsPage(driver, i);
+        if (Args.page && i < Args.page)
+            continue;
+            
+        await driver.goto(`${BaseUrl}&page=${i}`);
+
+        const pageUrlList = await driver.evaluate(() => {
+            const links = document.querySelectorAll('.stdtbl tbody tr td:nth-child(2) a');
+            const urls = Array.from(links).map(e => e.href);
+            return urls;
+        });
+
+        for (let url of pageUrlList) {
+            await driver.waitForTimeout(50);
+            const details = await scrapeDetailsPage(driver, url);
+            const imageUrlList = await scrapeImages(driver, url);
+            const coasterId = await saveDetails(details);
+            await saveImageUrls(coasterId, imageUrlList);
+        }
     }
 
     browser.close();
 }
 
-async function getDetailsImages(driver, link) {
-    const urlList = [];
-    const picLinks = await driver.evaluate(() => {
-        return Object.values(document.querySelectorAll('.pic-strip a'));
-    });
-
-    for (let i = 1; i <= Math.min(picLinks.length, 5); i++) {
-        await driver.click(`.pic-strip a:nth-child(${i})`);
-
-        const url = await driver.evaluate(() => {
-            const bg = window.getComputedStyle(document.body)['background-image'];
-            const start = bg.indexOf('url("');
-            const end = bg.indexOf('"),');
-            const url = bg.substring(start+5, end);
-            return url;
-        });
-        urlList.push(url);
-
-        await driver.goto(link);
-    }
-
-    return urlList;
-}
-
-async function runSearchResultsPage(driver, pageNum) {
-    await driver.goto(`${BaseUrl}&page=${pageNum}`);
-
-    const urlList = await driver.evaluate(() => {
-        const links = document.querySelectorAll('.stdtbl tbody tr td:nth-child(2) a');
-        const urls = Array.from(links).map(e => e.href);
-        return urls;
-    });
-
-    for (let url of urlList) {
-        await driver.waitForTimeout(100);
-        await runDetailsPage(driver, url);
-    }
-}
-
-async function runDetailsPage(driver, link) {
+async function scrapeDetailsPage(driver, link) {
     await driver.goto(link);
 
-    const details = await driver.evaluate(() => {
+    return await driver.evaluate(() => {
         function getElementsByXPath(xpath, parent) {
             let results = [];
             let query = document.evaluate(xpath, parent || document,
@@ -141,28 +155,40 @@ async function runDetailsPage(driver, link) {
         
         return { name, park, type, model, manufacturer, length, height, drop, speed, inversions, openingDate, numCars, numRowsPerCar, numInsideSeatsPerRow, numOutsideSeatsPerRow };
     });
-
-    const coasterId = await saveDetails(details);
-    const imageUrlList = await getDetailsImages(driver, link);
-    imageUrlList.forEach(async (imageUrl) => await saveImageUrl(coasterId, imageUrl));
 }
 
-async function clearDetails() {
-    await executeQuery(Connection, 'TRUNCATE Coasters');
-    await executeQuery(Connection, 'TRUNCATE CoasterImages');
+async function scrapeImages(driver, link) {
+    const urlList = [];
+    const picLinks = await driver.evaluate(() => {
+        return Object.values(document.querySelectorAll('.pic-strip a'));
+    });
+
+    for (let i = 1; i <= Math.min(picLinks.length, 5); i++) {
+        await driver.click(`.pic-strip a:nth-child(${i})`);
+
+        const url = await driver.evaluate(() => {
+            const bg = window.getComputedStyle(document.body)['background-image'];
+            const start = bg.indexOf('url("');
+            const end = bg.indexOf('"),');
+            const url = bg.substring(start+5, end);
+            return url;
+        });
+        urlList.push(url);
+
+        await driver.goto(link);
+    }
+
+    return urlList;
 }
 
-async function saveImageUrl(coasterId, imageUrl) {
+async function saveImageUrls(coasterId, imageUrls) {
     const cmd = `
-        INSERT INTO CoasterImages (
-            CoasterId,
-            ImageUrl
-        )
-        VALUES (
-            ${coasterId},
-            '${imageUrl}'
-        )
-    `;
+    INSERT INTO CoasterImages (
+        CoasterId,
+        ImageUrl
+    )
+    VALUES
+    `.concat(imageUrls.map(url => `(${coasterId}, '${url}')`).join(', '));
 
     try {
         console.info(cmd);
@@ -187,46 +213,46 @@ async function saveDetails(details) {
     };
 
     const cmd = `
-        INSERT INTO Coasters (
-            Park,
-            Name,
-            Type,
-            Model,
-            Manufacturer,
-            LengthInFt,
-            HeightInFt,
-            DropInFt,
-            SpeedInMph,
-            Inversions,
-            ColorPrimary,
-            ColorSecondary,
-            OpeningDate,
-            Url,
-            CarsPerTrain,
-            RowsPerCar,
-            InsideSeatsPerRow,
-            OutsideSeatsPerRow
-        )
-        VALUES (
-            ${details.park ? JSON.stringify(details.park) : 'NULL'},
-            ${details.name ? JSON.stringify(details.name) : 'NULL'},
-            ${details.type ? JSON.stringify(details.type) : 'NULL'},
-            ${details.model ? JSON.stringify(details.model) : 'NULL'},
-            ${details.manufacturer ? JSON.stringify(details.manufacturer) : 'NULL'},
-            ${details.length || 'NULL'},
-            ${details.height || 'NULL'},
-            ${details.drop || 'NULL'},
-            ${details.speed || 'NULL'},
-            ${details.inversions || 0},
-            '#ffffff',
-            '#000000',
-            '${details.openingDate}',
-            '${dashify(details.name)}-${dashify(details.park)}',
-            ${isNaN(details.numCars) ? null : details.numCars},
-            ${isNaN(details.numRowsPerCar) ? null : details.numRowsPerCar},
-            ${isNaN(details.numInsideSeatsPerRow) ? null : details.numInsideSeatsPerRow},
-            ${isNaN(details.numOutsideSeatsPerRow) ? null : details.numOutsideSeatsPerRow}
-        )
+    INSERT INTO Coasters (
+        Park,
+        Name,
+        Type,
+        Model,
+        Manufacturer,
+        LengthInFt,
+        HeightInFt,
+        DropInFt,
+        SpeedInMph,
+        Inversions,
+        ColorPrimary,
+        ColorSecondary,
+        OpeningDate,
+        Url,
+        CarsPerTrain,
+        RowsPerCar,
+        InsideSeatsPerRow,
+        OutsideSeatsPerRow
+    )
+    VALUES (
+        ${details.park ? JSON.stringify(details.park) : 'NULL'},
+        ${details.name ? JSON.stringify(details.name) : 'NULL'},
+        ${details.type ? JSON.stringify(details.type) : 'NULL'},
+        ${details.model ? JSON.stringify(details.model) : 'NULL'},
+        ${details.manufacturer ? JSON.stringify(details.manufacturer) : 'NULL'},
+        ${details.length || 'NULL'},
+        ${details.height || 'NULL'},
+        ${details.drop || 'NULL'},
+        ${details.speed || 'NULL'},
+        ${details.inversions || 0},
+        '#ffffff',
+        '#000000',
+        '${details.openingDate}',
+        '${dashify(details.name)}-${dashify(details.park)}',
+        ${isNaN(details.numCars) ? null : details.numCars},
+        ${isNaN(details.numRowsPerCar) ? null : details.numRowsPerCar},
+        ${isNaN(details.numInsideSeatsPerRow) ? null : details.numInsideSeatsPerRow},
+        ${isNaN(details.numOutsideSeatsPerRow) ? null : details.numOutsideSeatsPerRow}
+    )
     `;
 
     try {
@@ -241,7 +267,6 @@ async function saveDetails(details) {
 
 (async function() {
     Connection.connect();
-    await clearDetails();
-    await runSync();
+    await runCoasterScraper();
     Connection.end();
 })();

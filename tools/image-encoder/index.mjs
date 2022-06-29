@@ -1,20 +1,30 @@
 /**
- * Goes through CoasterImages table and converts image URL into Base64 encoded string, to be used as image preview which loads very quickly.
+ * Goes through CoasterImages table and converts image URL into Base64-encoded
+ * string, to be used as image preview which loads more quickly in the browser.
+ *
+ * Example:
+ *   node .
  **/
 
-const mysql = require('mysql');
-const plaiceholder = require('plaiceholder');
-const { executeQuery } = require('../../utilities/db');
-const { promiseMap } = require('../../utilities/promise');
+import dotenv from 'dotenv';
+import mysql from 'mysql';
+import plaiceholder from 'plaiceholder';
+import { executeQuery } from '../../utilities/db.mjs';
+import { promiseMap } from '../../utilities/promise.mjs';
 
+dotenv.config();
+
+/**
+ * Tool uses a single open connection.
+ **/
 const Connection = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : 'password',
-    database : 'ride'
+    host     : process.env.DB_HOST,
+    user     : process.env.DB_USER,
+    password : process.env.DB_PASSWORD,
+    database : 'CoasterRanker'
 });
 
-async function runEncode() {
+async function runImageEncoder() {
     const coasters = await getCoasters();
 
     return promiseMap(coasters, async (coaster) => {
@@ -41,6 +51,6 @@ async function getCoasters() {
 
 (async function() {
     Connection.connect();
-    await runEncode();
+    await runImageEncoder();
     Connection.end();
 })();

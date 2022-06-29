@@ -1,4 +1,4 @@
-function executeQuery(conn, cmd) {
+export function executeQuery(conn, cmd) {
   return new Promise((resolve, reject) => {
     conn.query(cmd, (error, results) => {
       if (error) reject(error);
@@ -6,5 +6,3 @@ function executeQuery(conn, cmd) {
     });
   });
 }
-
-module.exports = { executeQuery }

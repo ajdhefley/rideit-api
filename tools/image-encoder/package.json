@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "name": "image-encoder",
+  "description": "Goes through CoasterImages table and converts image URL into Base64 encoded string, to be used as image preview which loads very quickly.",
+  "main": "index.mjs",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mysql": "^2.18.1",
+    "plaiceholder": "^2.3.0",
+    "sharp": "^0.30.6"
+  },
+  "devDependencies": {}
+}

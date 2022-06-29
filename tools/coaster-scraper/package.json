@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "name": "coaster-scraper",
+  "description": "Scrapes and saves coaster data from RCDB.",
+  "main": "index.mjs",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "minimist": "^1.2.6",
+    "mysql": "^2.18.1",
+    "puppeteer": "^14.3.0"
+  },
+  "devDependencies": {}
+}
