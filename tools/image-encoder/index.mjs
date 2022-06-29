@@ -9,8 +9,7 @@
 import dotenv from 'dotenv';
 import mysql from 'mysql';
 import plaiceholder from 'plaiceholder';
-import { executeQuery } from '../../utilities/db.mjs';
-import { promiseMap } from '../../utilities/promise.mjs';
+import { executeQuery, promiseMap } from '../toolUtils.mjs';
 
 dotenv.config();
 
@@ -42,7 +41,7 @@ async function saveImageBase64(coaster, src, base64) {
 }
 
 async function getImagesByCoasterId(coasterId) {
-    return await executeQuery(Connection, `SELECT ImageUrl FROM CoasterImages WHERE CoasterId=${coasterId}`);
+    return await executeQuery(Connection, `SELECT ImageUrl FROM CoasterImages WHERE CoasterId=${coasterId} AND Base64 IS NULL`);
 }
 
 async function getCoasters() {

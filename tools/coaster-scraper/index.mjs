@@ -16,7 +16,7 @@ import mysql from 'mysql';
 import puppeteer from 'puppeteer';
 import minimist from 'minimist';
 import dotenv from 'dotenv';
-import { executeQuery } from '../../utilities/db.mjs';
+import { executeQuery } from '../toolUtils.mjs';
 
 dotenv.config();
 
