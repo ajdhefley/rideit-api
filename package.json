@@ -13,9 +13,8 @@
     "start:dev": "nest start --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --watch",
-    "tools:encode-images": "cd tools/base64-encode-images && node .",
-    "tools:sync-coasters": "cd tools/coaster-sync && node .",
-    "tools:create-mocks": "cd tools/create-fake-ratings && node ."
+    "tools:encoder": "cd tools/image-encoder && node .",
+    "tools:scraper": "cd tools/coaster-scraper && node ."
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",

@@ -37,11 +37,11 @@ async function runImageEncoder() {
 
 async function saveImageBase64(coaster, src, base64) {
     console.info(`Updating ${coaster.Name}: ${src}\n${base64}\n`);
-    return await executeQuery(Connection, `UPDATE CoasterImages SET Base64='${base64}' WHERE CoasterId=${coaster.CoasterId} AND ImageUrl='${src}'`);
+    return await executeQuery(Connection, 'UPDATE CoasterImages SET Base64=? WHERE CoasterId=? AND ImageUrl=?', [base64, coaster.CoasterId, src]);
 }
 
 async function getImagesByCoasterId(coasterId) {
-    return await executeQuery(Connection, `SELECT ImageUrl FROM CoasterImages WHERE CoasterId=${coasterId} AND Base64 IS NULL`);
+    return await executeQuery(Connection, 'SELECT ImageUrl FROM CoasterImages WHERE CoasterId=? AND Base64 IS NULL', [coasterId]);
 }
 
 async function getCoasters() {
