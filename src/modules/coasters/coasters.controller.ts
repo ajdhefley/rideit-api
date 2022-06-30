@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { CoasterService } from './services/coaster.service';
 
 @Controller('coasters')
-export class CoasterController {
+export class CoastersController {
   constructor(private readonly coasterService: CoasterService) {}
 
   // @Get()

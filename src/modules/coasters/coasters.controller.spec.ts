@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CoasterController } from './coaster.controller';
+import { CoastersController } from './coasters.controller';
 import { CoasterService } from './services/coaster.service';
 
-describe('CoasterController', () => {
-  let coasterController: CoasterController;
+describe('CoastersController', () => {
+  let coasterController: CoastersController;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [CoasterController],
+      controllers: [CoastersController],
       providers: [CoasterService],
     }).compile();
 
-    coasterController = app.get<CoasterController>(CoasterController);
+    coasterController = app.get<CoastersController>(CoastersController);
   });
 });
