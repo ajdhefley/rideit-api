@@ -1,5 +1,4 @@
 import { CoasterImage } from './coaster-image.model';
-import { CoasterInfo } from './coaster-info.model';
 
 export class Coaster {
     CoasterId: number;
@@ -7,6 +6,7 @@ export class Coaster {
     Park: string;
     Type: string;
     Model: string;
+    OpeningDate: string;
     Manufacturer: string;
     HeightInFt: number;
     DropInFt: number;
@@ -28,6 +28,5 @@ export class Coaster {
     ratingCount: number;
     rank: number;
     goldenTicketAwards: string;
-    info: CoasterInfo;
     angleInDegrees: number;
 }

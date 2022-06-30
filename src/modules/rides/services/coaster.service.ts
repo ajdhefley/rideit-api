@@ -1,41 +1,34 @@
-import { createConnection } from 'mysql';
+import * as mysql from 'mysql';
 import { Injectable } from '@nestjs/common';
 import { Coaster } from '../models/coaster.model';
 import { CoasterImage } from '../models/coaster-image.model';
 
 @Injectable()
 export class CoasterService {
-  getCoasters(): Promise<Coaster[]> {
-    return new Promise((resolve, reject) => {
-      const cmd = 'SELECT * FROM Coasters';
-      const con = this.createConnection();
-      con.query(cmd, (error, results) => {
-        if (error)
-          reject(error);
-        resolve(Object.values(results));
-      });
-      con.end();
-    });
+  async getCoasters(): Promise<Coaster[]> {
+    return await this.executeSelect('SELECT * FROM Coasters');
   }
 
-  getCoasterByUrl(url: string): Promise<Coaster> {
-    return new Promise((resolve, reject) => {
-      const cmd = `SELECT * FROM Coasters WHERE Url = '${url}' LIMIT 1`;
-      const con = this.createConnection();
-      con.query(cmd, (error, results) => {
-        if (error)
-          reject(error);
-        resolve(results ? results[0] : null);
-      });
-      con.end();
-    });
+  async getCoastersLikeName(name: string): Promise<Coaster[]> {
+    const results = await this.executeSelect<Coaster>(`SELECT * FROM Coasters WHERE Name LIKE concat('%', ?, '%')`, [name]);
+    return Object.values(results);
   }
 
-  getCoasterImages(coasterId: number): Promise<CoasterImage[]> {
+  async getCoasterByUrl(url: string): Promise<Coaster> {
+    const results = await this.executeSelect<Coaster>('SELECT * FROM Coasters WHERE Url = ? LIMIT 1', [url]);
+    const values = Object.values(results);
+    return values[0];
+  }
+
+  async getCoasterImages(coasterId: number): Promise<CoasterImage[]> {
+    const results = await this.executeSelect<CoasterImage>('SELECT * FROM CoasterImages WHERE CoasterId = ?', [coasterId]);
+    return Object.values(results);
+  }
+
+  private executeSelect<T>(cmd: string, params?: Array<any>): Promise<T[]> {
     return new Promise((resolve, reject) => {
-      const cmd = `SELECT * FROM CoasterImages WHERE CoasterId = ${coasterId}`;
       const con = this.createConnection();
-      con.query(cmd, (error, results) => {
+      con.query(cmd, params, (error, results) => {
         if (error)
           reject(error);
         resolve(results);
@@ -45,11 +38,11 @@ export class CoasterService {
   }
 
   private createConnection() {
-    return createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: 'password',
-      database: 'ride'
+    return mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: 'CoasterRanker'
     });
   }
 }

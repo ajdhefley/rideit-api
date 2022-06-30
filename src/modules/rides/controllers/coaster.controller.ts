@@ -13,9 +13,21 @@ export class CoasterController {
   }
 
   @Get(':url')
-  async getCoaster(@Req() req: Request, @Res() res: Response, @Param() params) {
+  async getCoasterByUrl(@Req() req: Request, @Res() res: Response, @Param() params) {
     const coaster = await this.coasterService.getCoasterByUrl(params.url);
+    console.log(coaster);
     coaster.ImgList = await this.coasterService.getCoasterImages(coaster.CoasterId);
     return res.json(coaster);
+  }
+
+  @Get('query/:value')
+  async queryCoastersByName(@Req() req: Request, @Res() res: Response, @Param() params) {
+    const coasters = await this.coasterService.getCoastersLikeName(params.value);
+
+    for (let coaster of coasters) {
+      coaster.ImgList = await this.coasterService.getCoasterImages(coaster.CoasterId);
+    }
+
+    return res.json(coasters);
   }
 }
