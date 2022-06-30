@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoasterController } from './coaster.controller';
-import { CoasterService } from '../services/coaster.service';
+import { CoasterService } from './services/coaster.service';
 
 describe('CoasterController', () => {
   let coasterController: CoasterController;

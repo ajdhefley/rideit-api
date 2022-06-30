@@ -1,18 +1,12 @@
 import * as mysql from 'mysql';
 import { Injectable } from '@nestjs/common';
-import { Coaster } from '../models/coaster.model';
+import { CoasterImage } from '../models/coaster-image.model';
 
 @Injectable()
-export class CoasterService {
-  async findAll(): Promise<Coaster[]> {
-    const results = await this.executeSelect<Coaster>('SELECT * FROM Coasters');
+export class CoasterImageService {
+  async findAll(coasterId: number): Promise<CoasterImage[]> {
+    const results = await this.executeSelect<CoasterImage>('SELECT * FROM CoasterImages WHERE CoasterId = ?', [coasterId]);
     return Object.values(results);
-  }
-
-  async findOne(url: string): Promise<Coaster> {
-    const results = await this.executeSelect<Coaster>('SELECT * FROM Coasters WHERE Url = ? LIMIT 1', [url]);
-    const values = Object.values(results);
-    return values[0];
   }
 
   private executeSelect<T>(cmd: string, params?: Array<any>): Promise<T[]> {

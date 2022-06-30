@@ -37,3 +37,6 @@ lerna-debug.log*
 
 # Configuration
 ormconfig.json
+
+# GraphQL
+schema.gql

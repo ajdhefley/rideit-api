@@ -1,10 +1,10 @@
 import * as mysql from 'mysql';
 import { Injectable } from '@nestjs/common';
-import { Comment } from '../models/comment.model';
+import { Comment } from './models/comment.model';
 
 @Injectable()
 export class CommentService {
-    async getCommentsByCoasterId(coasterId: number): Promise<Comment[]> {
+    async findAll(coasterId: number): Promise<Comment[]> {
         const results = await this.executeSelect<Comment>(`
             SELECT c.* FROM CoasterComments cc
             JOIN Comments c ON c.CommentId = cc.CommentId

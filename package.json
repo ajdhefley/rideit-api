@@ -17,10 +17,14 @@
     "tools:scraper": "cd tools/coaster-scraper && node ."
   },
   "dependencies": {
+    "@nestjs/apollo": "^10.0.16",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
+    "@nestjs/graphql": "^10.0.16",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/typeorm": "^8.1.2",
+    "apollo-server-express": "^3.9.0",
+    "graphql": "^16.5.0",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
