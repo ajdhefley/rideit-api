@@ -1,6 +1,6 @@
 import * as mysql from 'mysql';
 import { Injectable } from '@nestjs/common';
-import { Comment } from './models/comment.model';
+import { Comment } from '../models/comment.model';
 
 @Injectable()
 export class CommentService {
