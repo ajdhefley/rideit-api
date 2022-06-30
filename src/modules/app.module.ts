@@ -3,12 +3,12 @@ import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from '../infrastructure/exceptions/http-exception.filter';
 import { RequestLoggerMiddleware } from '../infrastructure/logging/request-logger.middleware';
 import { CommentsModule } from './comments/comments.module';
-import { RidesModule } from './rides/rides.module';
+import { CoastersModule } from './coasters/coasters.module';
 
 @Module({
   imports: [
     CommentsModule,
-    RidesModule
+    CoastersModule
   ],
   controllers: [],
   providers: [

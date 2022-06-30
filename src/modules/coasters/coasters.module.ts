@@ -7,4 +7,4 @@ import { CoasterService } from './services/coaster.service';
   controllers: [CoasterController],
   providers: [CoasterService],
 })
-export class RidesModule {}
+export class CoastersModule {}

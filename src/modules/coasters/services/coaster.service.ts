@@ -5,12 +5,8 @@ import { CoasterImage } from '../models/coaster-image.model';
 
 @Injectable()
 export class CoasterService {
-  async getCoasters(): Promise<Coaster[]> {
-    return await this.executeSelect('SELECT * FROM Coasters');
-  }
-
-  async getCoastersLikeName(name: string): Promise<Coaster[]> {
-    const results = await this.executeSelect<Coaster>(`SELECT * FROM Coasters WHERE Name LIKE concat('%', ?, '%')`, [name]);
+  async getCoasters(filter: string): Promise<Coaster[]> {
+    const results = await this.executeSelect<Coaster>(`SELECT * FROM Coasters WHERE Name LIKE concat('%', ?, '%')`, [filter || '']);
     return Object.values(results);
   }
 
