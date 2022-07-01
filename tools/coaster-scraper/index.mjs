@@ -2,6 +2,8 @@
  * Searches RCDB for all coasters in North America. Scrapes data
  * and up to five images by accessing details for each search result.
  * 
+ * Also makes some calculations upon saving (such as 4 outside seats / 0 inside seats for Manufacturer=B&M, Model=Wing.)
+ * 
  * Flags:
  *   page    = Which page to start on (say if previous run stopped prematurely and need to start tool later in the process)
  *   noreset = If present, do not clear/reset the database first, add tool results to existing data.
