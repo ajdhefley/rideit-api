@@ -10,6 +10,12 @@ class CoasterArgs {
   url?: string;
 }
 
+@ArgsType()
+class CoasterFilterArgs {
+  @Field(type => String, { nullable: false })
+  name?: string;
+}
+
 @Resolver(of => Coaster)
 export class CoasterResolver {
   constructor(
@@ -25,6 +31,11 @@ export class CoasterResolver {
   @Query(returns => Coaster)
   async coaster(@Args() args: CoasterArgs) {
     return this.coasterService.findOneBy(args.url);
+  }
+
+  @Query(returns => [Coaster])
+  async coasterFilter(@Args() args: CoasterFilterArgs) {
+    return this.coasterService.findLike(args.name);
   }
 
   @ResolveField(returns => [CoasterImage])

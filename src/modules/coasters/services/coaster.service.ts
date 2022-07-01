@@ -14,6 +14,13 @@ export class CoasterService {
     return this.coasterRepository.find();
   }
 
+  findLike(Name: string): Promise<CoasterEntity[]> {
+    return this.coasterRepository
+      .createQueryBuilder('coaster')
+      .where('coaster.Name LIKE :name', { name: `%${Name}%` })
+      .getMany();
+  }
+
   findOneBy(Url: string): Promise<CoasterEntity> {
     return this.coasterRepository.findOneBy({ Url });
   }
