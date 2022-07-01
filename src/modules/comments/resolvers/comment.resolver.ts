@@ -14,6 +14,6 @@ export class CommentResolver {
 
   @Query(returns => [Comment])
   async comments(@Args() args: CommentArgs) {
-    return this.commentService.findAll(args.coasterId);
+    return this.commentService.findBy(args.coasterId);
   }
 }

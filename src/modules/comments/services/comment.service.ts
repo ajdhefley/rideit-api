@@ -1,36 +1,16 @@
-import * as mysql from 'mysql';
 import { Injectable } from '@nestjs/common';
-import { Comment } from '../models/comment.model';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CommentEntity } from '../models/comment.entity';
 
 @Injectable()
 export class CommentService {
-    async findAll(coasterId: number): Promise<Comment[]> {
-        const results = await this.executeSelect<Comment>(`
-            SELECT c.* FROM CoasterComments cc
-            JOIN Comments c ON c.CommentId = cc.CommentId
-            WHERE cc.CoasterId = ?
-        `, [coasterId]);
-        return Object.values(results);
-    }
+    constructor(
+        @InjectRepository(CommentEntity)
+        private commentRepository: Repository<CommentEntity>
+    ) { }
 
-    private executeSelect<T>(cmd: string, params?: Array<any>): Promise<T[]> {
-        return new Promise((resolve, reject) => {
-            const con = this.createConnection();
-            con.query(cmd, params, (error, results) => {
-                if (error)
-                    reject(error);
-                resolve(results);
-            });
-            con.end();
-        });
+    findBy(CoasterId: number): Promise<CommentEntity[]> {
+        return this.commentRepository.findBy({ CoasterId });
     }
-
-    private createConnection() {
-        return mysql.createConnection({
-          host: process.env.DB_HOST,
-          user: process.env.DB_USER,
-          password: process.env.DB_PASSWORD,
-          database: 'CoasterRanker'
-        });
-      }
 }

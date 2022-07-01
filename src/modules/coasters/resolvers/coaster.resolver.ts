@@ -24,11 +24,11 @@ export class CoasterResolver {
 
   @Query(returns => Coaster)
   async coaster(@Args() args: CoasterArgs) {
-    return this.coasterService.findOne(args.url);
+    return this.coasterService.findOneBy(args.url);
   }
 
   @ResolveField(returns => [CoasterImage])
   async ImgList(@Parent() coaster: Coaster) {
-    return this.coasterImageService.findAll(coaster.CoasterId);
+    return this.coasterImageService.findBy(coaster.CoasterId);
   }
 }

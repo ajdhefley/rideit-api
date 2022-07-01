@@ -14,6 +14,6 @@ export class CoasterImageResolver {
 
   @Query(returns => [CoasterImage])
   async coasterImages(@Args() args: CoasterImageArgs) {
-    return this.coasterImageService.findAll(args.coasterId);
+    return this.coasterImageService.findBy(args.coasterId);
   }
 }

@@ -1,15 +1,22 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { HttpExceptionFilter } from '../infrastructure/exceptions/http-exception.filter';
 import { RequestLoggerMiddleware } from '../infrastructure/logging/request-logger.middleware';
 import { CoastersModule } from './coasters/coasters.module';
+import { CoasterImageEntity } from './coasters/models/coaster-image.entity';
+import { CoasterEntity } from './coasters/models/coaster.entity';
 import { CommentsModule } from './comments/comments.module';
+import { CommentEntity } from './comments/models/comment.entity';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
+
     CommentsModule,
 
     CoastersModule,
@@ -17,6 +24,20 @@ import { CommentsModule } from './comments/comments.module';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join('schema.gql'),
+    }),
+
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.DB_HOST,
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: 'CoasterRanker',
+      entities: [
+        CoasterEntity,
+        CoasterImageEntity,
+        CommentEntity
+      ],
+      synchronize: false,
     })
   ],
   controllers: [],
