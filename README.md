@@ -30,6 +30,7 @@ Build the application:
 - `npm run start:dev` - Start application with watcher
 - `npm run build` - Build application
 - `npm run test` - Run tests
+- `npm run test:e2e` - Run end-to-end (live) tests
 - `npm run lint` - Run linter
 
 - `npm run tools:scraper` - Run tool to scrape coaster data/images and save to DB

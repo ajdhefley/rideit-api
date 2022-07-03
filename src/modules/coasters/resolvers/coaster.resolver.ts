@@ -25,21 +25,21 @@ export class CoasterResolver {
 
   @Query(returns => [Coaster])
   async coasters() {
-    return this.coasterService.findAll();
+    return await this.coasterService.findAll();
   }
 
   @Query(returns => Coaster)
   async coaster(@Args() args: CoasterArgs) {
-    return this.coasterService.findOneBy(args.url);
+    return await this.coasterService.findOneBy(args.url);
   }
 
   @Query(returns => [Coaster])
   async coasterFilter(@Args() args: CoasterFilterArgs) {
-    return this.coasterService.findLike(args.name);
+    return await this.coasterService.findLike(args.name);
   }
 
   @ResolveField(returns => [CoasterImage])
   async ImgList(@Parent() coaster: Coaster) {
-    return this.coasterImageService.findBy(coaster.CoasterId);
+    return await this.coasterImageService.findBy(coaster.CoasterId);
   }
 }

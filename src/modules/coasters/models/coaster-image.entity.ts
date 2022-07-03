@@ -1,8 +1,11 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('CoasterImages')
 export class CoasterImageEntity {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
+    CoasterImageId: number;
+    
+    @Column()
     CoasterId: number;
 
     @Column()

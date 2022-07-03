@@ -32,11 +32,11 @@ import { CommentEntity } from './comments/models/comment.entity';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: 'CoasterRanker',
-      entities: [
-        CoasterEntity,
-        CoasterImageEntity,
-        CommentEntity
-      ],
+      // entities: [
+      //   CoasterEntity,
+      //   CoasterImageEntity,
+      //   CommentEntity
+      // ],
       synchronize: false,
     })
   ],
