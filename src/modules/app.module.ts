@@ -7,15 +7,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { HttpExceptionFilter } from '../infrastructure/exceptions/http-exception.filter';
 import { RequestLoggerMiddleware } from '../infrastructure/logging/request-logger.middleware';
+import { AuthModule } from './auth/auth.module';
 import { CoastersModule } from './coasters/coasters.module';
-import { CoasterImageEntity } from './coasters/models/coaster-image.entity';
-import { CoasterEntity } from './coasters/models/coaster.entity';
 import { CommentsModule } from './comments/comments.module';
-import { CommentEntity } from './comments/models/comment.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+
+    AuthModule,
 
     CommentsModule,
 
