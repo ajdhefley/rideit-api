@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CoasterService } from './services/coaster.service';
+import { CoasterService } from '../services/coaster.service';
 
 @Controller('coasters')
 export class CoastersController {

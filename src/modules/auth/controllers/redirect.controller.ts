@@ -1,8 +1,8 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { GoogleGuard } from './google/google.guard';
-import { AuthService } from './services/auth.service';
-import { FacebookGuard } from './facebook/facebook.guard';
+import { AuthService } from '../services/auth.service';
+import { GoogleGuard } from '../google/google.guard';
+import { FacebookGuard } from '../facebook/facebook.guard';
 
 @Controller('auth/redirect')
 export class RedirectController {

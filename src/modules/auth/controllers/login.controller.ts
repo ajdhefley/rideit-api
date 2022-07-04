@@ -1,8 +1,8 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { FacebookGuard } from './facebook/facebook.guard';
-import { GoogleGuard } from './google/google.guard';
-import { AuthService } from './services/auth.service';
+import { AuthService } from '../services/auth.service';
+import { FacebookGuard } from '../facebook/facebook.guard';
+import { GoogleGuard } from '../google/google.guard';
 
 @Controller('auth/login')
 export class LoginController {

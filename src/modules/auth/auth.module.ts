@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { LoginController } from './login.controller';
-import { RedirectController } from './redirect.controller';
+import { LoginController } from './controllers/login.controller';
+import { RedirectController } from './controllers/redirect.controller';
 import { AuthService } from './services/auth.service';
 
 @Module({

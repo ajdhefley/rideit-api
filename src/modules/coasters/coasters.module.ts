@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CoastersController } from './coasters.controller';
+import { CoastersController } from './controllers/coasters.controller';
 import { CoasterImageEntity } from './models/coaster-image.entity';
 import { CoasterEntity } from './models/coaster.entity';
 import { CoasterImageResolver } from './resolvers/coaster-image.resolver';
