@@ -1,6 +1,7 @@
 /**
  * Goes through CoasterImages table and converts image URL into Base64-encoded
  * string, to be used as image preview which loads more quickly in the browser.
+ * The coaster scraper tool should be run first.
  *
  * Example:
  *   node .

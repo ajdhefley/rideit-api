@@ -1,6 +1,6 @@
-export function executeQuery(conn, cmd) {
+export function executeQuery(conn, cmd, params) {
     return new Promise((resolve, reject) => {
-        conn.query(cmd, (error, results) => {
+        conn.query(cmd, params, (error, results) => {
             if (error) reject(error);
             resolve(results || null);
         });
