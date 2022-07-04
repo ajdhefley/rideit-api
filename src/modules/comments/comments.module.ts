@@ -6,15 +6,15 @@ import { CommentResolver } from './resolvers/comment.resolver';
 import { CommentService } from './services/comment.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CommentEntity])
-  ],
-  controllers: [
-    CommentsController
-  ],
-  providers: [
-    CommentService,
-    CommentResolver
-  ]
+    imports: [
+        TypeOrmModule.forFeature([CommentEntity])
+    ],
+    controllers: [
+        CommentsController
+    ],
+    providers: [
+        CommentService,
+        CommentResolver
+    ]
 })
-export class CommentsModule {}
+export class CommentsModule { }

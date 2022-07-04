@@ -9,17 +9,17 @@ import { CoasterImageService } from './services/coaster-image.service';
 import { CoasterService } from './services/coaster.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CoasterEntity, CoasterImageEntity])
-  ],
-  controllers: [
-    CoastersController
-  ],
-  providers: [
-    CoasterService,
-    CoasterImageService,
-    CoasterResolver,
-    CoasterImageResolver
-  ]
+    imports: [
+        TypeOrmModule.forFeature([CoasterEntity, CoasterImageEntity])
+    ],
+    controllers: [
+        CoastersController
+    ],
+    providers: [
+        CoasterService,
+        CoasterImageService,
+        CoasterResolver,
+        CoasterImageResolver
+    ]
 })
-export class CoastersModule {}
+export class CoastersModule { }

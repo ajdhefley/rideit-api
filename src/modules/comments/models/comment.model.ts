@@ -10,7 +10,7 @@ export class Comment {
 
     @Field()
     Author: string;
-    
+
     @Field()
     Body: string;
 

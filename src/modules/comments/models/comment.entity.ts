@@ -10,7 +10,7 @@ export class CommentEntity {
 
     @Column()
     Author: string;
-    
+
     @Column()
     Body: string;
 

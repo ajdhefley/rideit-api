@@ -12,44 +12,44 @@ import { CoastersModule } from './coasters/coasters.module';
 import { CommentsModule } from './comments/comments.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
+    imports: [
+        ConfigModule.forRoot(),
 
-    AuthModule,
+        AuthModule,
 
-    CommentsModule,
+        CommentsModule,
 
-    CoastersModule,
+        CoastersModule,
 
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      autoSchemaFile: join('schema.gql'),
-    }),
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+            driver: ApolloDriver,
+            autoSchemaFile: join('schema.gql'),
+        }),
 
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.DB_HOST,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: 'CoasterRanker',
-      // entities: [
-      //   CoasterEntity,
-      //   CoasterImageEntity,
-      //   CommentEntity
-      // ],
-      synchronize: false,
-    })
-  ],
-  controllers: [],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter
-    }
-  ],
+        TypeOrmModule.forRoot({
+            type: 'mysql',
+            host: process.env.DB_HOST,
+            username: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: 'CoasterRanker',
+            // entities: [
+            //   CoasterEntity,
+            //   CoasterImageEntity,
+            //   CommentEntity
+            // ],
+            synchronize: false,
+        })
+    ],
+    controllers: [],
+    providers: [
+        {
+            provide: APP_FILTER,
+            useClass: HttpExceptionFilter
+        }
+    ],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestLoggerMiddleware).forRoutes('*');
-  }
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(RequestLoggerMiddleware).forRoutes('*');
+    }
 }

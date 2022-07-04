@@ -10,10 +10,10 @@ class CommentArgs {
 
 @Resolver(of => Comment)
 export class CommentResolver {
-  constructor(private commentService: CommentService) {}
+    constructor(private commentService: CommentService) { }
 
-  @Query(returns => [Comment])
-  async comments(@Args() args: CommentArgs) {
-    return this.commentService.findBy(args.coasterId);
-  }
+    @Query(returns => [Comment])
+    async comments(@Args() args: CommentArgs) {
+        return this.commentService.findBy(args.coasterId);
+    }
 }

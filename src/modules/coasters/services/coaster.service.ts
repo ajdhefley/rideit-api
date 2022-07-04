@@ -5,23 +5,23 @@ import { CoasterEntity } from '../models/coaster.entity';
 
 @Injectable()
 export class CoasterService {
-  constructor(
-    @InjectRepository(CoasterEntity)
-    private coasterRepository: Repository<CoasterEntity>
-  ) { }
+    constructor(
+        @InjectRepository(CoasterEntity)
+        private coasterRepository: Repository<CoasterEntity>
+    ) { }
 
-  findAll(): Promise<CoasterEntity[]> {
-    return this.coasterRepository.find();
-  }
+    findAll(): Promise<CoasterEntity[]> {
+        return this.coasterRepository.find();
+    }
 
-  findLike(Name: string): Promise<CoasterEntity[]> {
-    return this.coasterRepository
-      .createQueryBuilder('coaster')
-      .where('coaster.Name LIKE :name', { name: `%${Name}%` })
-      .getMany();
-  }
+    findLike(Name: string): Promise<CoasterEntity[]> {
+        return this.coasterRepository
+            .createQueryBuilder('coaster')
+            .where('coaster.Name LIKE :name', { name: `%${Name}%` })
+            .getMany();
+    }
 
-  findOneBy(Url: string): Promise<CoasterEntity> {
-    return this.coasterRepository.findOneBy({ Url });
-  }
+    findOneBy(Url: string): Promise<CoasterEntity> {
+        return this.coasterRepository.findOneBy({ Url });
+    }
 }

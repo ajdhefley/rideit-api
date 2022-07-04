@@ -10,10 +10,10 @@ class UserArgs {
 
 @Resolver(of => User)
 export class UserResolver {
-  constructor(private userService: UserService) {}
+    constructor(private userService: UserService) { }
 
-  @Query(returns => User)
-  async user(@Args() args: UserArgs) {
-    return this.userService.findOne(args.userId);
-  }
+    @Query(returns => User)
+    async user(@Args() args: UserArgs) {
+        return this.userService.findOne(args.userId);
+    }
 }

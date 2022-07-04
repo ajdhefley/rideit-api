@@ -10,10 +10,10 @@ class CoasterImageArgs {
 
 @Resolver(of => CoasterImage)
 export class CoasterImageResolver {
-  constructor(private coasterImageService: CoasterImageService) {}
+    constructor(private coasterImageService: CoasterImageService) { }
 
-  @Query(returns => [CoasterImage])
-  async coasterImages(@Args() args: CoasterImageArgs) {
-    return this.coasterImageService.findBy(args.coasterId);
-  }
+    @Query(returns => [CoasterImage])
+    async coasterImages(@Args() args: CoasterImageArgs) {
+        return this.coasterImageService.findBy(args.coasterId);
+    }
 }

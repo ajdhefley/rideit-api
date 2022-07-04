@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 export class CoasterImageEntity {
     @PrimaryGeneratedColumn()
     CoasterImageId: number;
-    
+
     @Column()
     CoasterId: number;
 

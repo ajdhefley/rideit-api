@@ -6,17 +6,17 @@ import { AuthService } from './services/auth.service';
 
 @Controller('auth/login')
 export class LoginController {
-  constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService) { }
 
-  @Get('google')
-  @UseGuards(GoogleGuard)
-  google() {
-    return;
-  }
+    @Get('google')
+    @UseGuards(GoogleGuard)
+    google() {
+        return;
+    }
 
-  @Get('facebook')
-  @UseGuards(FacebookGuard)
-  facebook() {
-    return;
-  }
+    @Get('facebook')
+    @UseGuards(FacebookGuard)
+    facebook() {
+        return;
+    }
 }

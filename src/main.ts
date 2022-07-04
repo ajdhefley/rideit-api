@@ -4,13 +4,13 @@ import { AppModule } from './modules/app.module';
 import { WinstonLoggerService } from './infrastructure/logging/winston-logger.service';
 
 (async function bootstrap() {
-  dotenv.config();
+    dotenv.config();
 
-  const app = await NestFactory.create(AppModule, {
-    logger: new WinstonLoggerService(),
-    cors: true
-  });
+    const app = await NestFactory.create(AppModule, {
+        logger: new WinstonLoggerService(),
+        cors: true
+    });
 
-  await app.enableCors();
-  await app.listen(process.env.PORT);
+    await app.enableCors();
+    await app.listen(process.env.PORT);
 })();
