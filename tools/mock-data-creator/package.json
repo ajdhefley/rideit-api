@@ -1,14 +1,13 @@
 {
-  "name": "mock-data-creator",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "mock-data-creator",
+  "description": "Inserts fake comments into the DB.",
+  "main": "index.mjs",
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mysql": "^2.18.1",
-    "puppeteer": "^14.3.0"
+    "minimist": "^1.2.6",
+    "mysql": "^2.18.1"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
