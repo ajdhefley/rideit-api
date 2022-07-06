@@ -5,33 +5,32 @@
  *   node .
  **/
 
-import mysql from 'mysql';
-import dotenv from 'dotenv';
-import { executeQuery } from '../toolUtils.mjs';
- 
-dotenv.config();
- 
+import mysql from 'mysql'
+
+/**
+ * Allows accessing arguments/flags by name instead of array index.
+ **/
+const Args = minimist(process.argv.slice(2))
+
 /**
  * Tool uses a single open connection.
  **/
 const Connection = mysql.createConnection({
-    host     : process.env.DB_HOST,
-    user     : process.env.DB_USER,
-    password : process.env.DB_PASSWORD,
-    database : 'CoasterRanker'
-});
+    host     : Args['db-host'],
+    user     : Args['db-user'],
+    password : Args['db-password'],
+    database : Args['db-name']
+})
 
-async function runMockDataCreator() {
-
+async function run() {
+    Connection.connect()
 }
 
-async function getCoasters() {
-    return await executeQuery(Connection, 'SELECT CoasterId, Name FROM Coasters');
+async function dispose() {
+    Connection.end()
 }
 
-(async function() {
-    Connection.connect();
-    await runMockDataCreator();
-    Connection.end();
-})();
- 
+run()
+    .then(() => console.info('mock-data-creator finished.'))
+    .catch((err) => console.error(err))
+    .finally(dispose)

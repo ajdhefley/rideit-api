@@ -3,54 +3,70 @@
  * string, to be used as image preview which loads more quickly in the browser.
  * The coaster scraper tool should be run first.
  *
+ * Flags:
+ *   db-name     = Name of DB being connected to
+ *   db-host     = DB host
+ *   db-user     = DB user
+ *   db-password = DB password
+ * 
  * Example:
- *   node .
+ *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase
  **/
 
-import dotenv from 'dotenv';
-import mysql from 'mysql';
-import plaiceholder from 'plaiceholder';
-import { executeQuery, promiseMap } from '../toolUtils.mjs';
+import mysql from 'mysql'
+import plaiceholder from 'plaiceholder'
+import minimist from 'minimist'
+import { executeQuery, promiseMap } from '../toolUtils.mjs'
 
-dotenv.config();
+/**
+ * Allows accessing arguments/flags by name instead of array index.
+ **/
+const Args = minimist(process.argv.slice(2))
 
 /**
  * Tool uses a single open connection.
  **/
 const Connection = mysql.createConnection({
-    host     : process.env.DB_HOST,
-    user     : process.env.DB_USER,
-    password : process.env.DB_PASSWORD,
-    database : 'CoasterRanker'
-});
+    host     : Args['db-host'],
+    user     : Args['db-user'],
+    password : Args['db-password'],
+    database : Args['db-name']
+})
 
-async function runImageEncoder() {
-    const coasters = await getCoasters();
-
+async function encodeAllImages() {
+    const coasters = await getCoasters()
     return promiseMap(coasters, async (coaster) => {
-        const imageResults = await getImagesByCoasterId(coaster.CoasterId);
-        return promiseMap(imageResults, async (imageResult) => {
-            const result = await plaiceholder.getPlaiceholder(imageResult.ImageUrl);
-            await saveImageBase64(coaster, imageResult.ImageUrl, result.base64);
-        });
-    });
+        const images = await getImagesByCoasterId(coaster.CoasterId)
+        return promiseMap(images, async (image) => {
+            const result = await plaiceholder.getPlaiceholder(image.ImageUrl)
+            await saveEncodedImage(coaster, image.ImageUrl, result.base64)
+        })
+    })
 }
 
-async function saveImageBase64(coaster, src, base64) {
-    console.info(`Updating ${coaster.Name}: ${src}\n${base64}\n`);
-    return await executeQuery(Connection, 'UPDATE CoasterImages SET Base64=? WHERE CoasterId=? AND ImageUrl=?', [base64, coaster.CoasterId, src]);
+async function saveEncodedImage(coaster, src, base64) {
+    console.info(`Updating ${coaster.Name}: ${src}\n${base64}\n`)
+    return await executeQuery(Connection, 'UPDATE CoasterImages SET Base64=? WHERE CoasterId=? AND ImageUrl=?', [base64, coaster.CoasterId, src])
 }
 
 async function getImagesByCoasterId(coasterId) {
-    return await executeQuery(Connection, 'SELECT ImageUrl FROM CoasterImages WHERE CoasterId=? AND Base64 IS NULL', [coasterId]);
+    return await executeQuery(Connection, 'SELECT ImageUrl FROM CoasterImages WHERE CoasterId=? AND Base64 IS NULL', [coasterId])
 }
 
 async function getCoasters() {
-    return await executeQuery(Connection, 'SELECT CoasterId, Name FROM Coasters');
+    return await executeQuery(Connection, 'SELECT CoasterId, Name FROM Coasters')
 }
 
-(async function() {
-    Connection.connect();
-    await runImageEncoder();
-    Connection.end();
-})();
+async function run() {
+    Connection.connect()
+    await encodeAllImages();
+}
+
+async function dispose() {
+    Connection.end()
+}
+
+run()
+    .then(() => console.info('image-encoder finished.'))
+    .catch((err) => console.error(err))
+    .finally(dispose)
