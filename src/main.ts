@@ -12,5 +12,8 @@ import { WinstonLoggerService } from './infrastructure/logging/winston-logger.se
     });
 
     await app.enableCors();
-    await app.listen(process.env.PORT);
+    
+    app.listen(process.env.PORT, () => {
+        console.info(`%c Server running on PORT ${process.env.PORT}`);
+    });
 })();
