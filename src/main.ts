@@ -4,7 +4,7 @@ import { AppModule } from './modules/app.module';
 import { WinstonLoggerService } from './infrastructure/logging/winston-logger.service';
 
 (async function bootstrap() {
-    dotenv.config();
+    //dotenv.config();
 
     const app = await NestFactory.create(AppModule, {
         logger: new WinstonLoggerService(),
@@ -12,8 +12,8 @@ import { WinstonLoggerService } from './infrastructure/logging/winston-logger.se
     });
 
     await app.enableCors();
-    
-    app.listen(process.env.PORT, () => {
+
+    app.listen(process.env.PORT || 4040, () => {
         console.info(`%c Server running on PORT ${process.env.PORT}`);
     });
 })();
