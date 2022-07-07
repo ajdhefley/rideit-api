@@ -12,6 +12,7 @@
     "start:dev": "nest start --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --watch --config ./jest.json",
+    "test:ci": "jest --config ./jest.json",
     "test:e2e": "jest --config ./jest-e2e.json",
     "tools:encoder": "cd tools/image-encoder && node .",
     "tools:scraper": "cd tools/coaster-scraper && node ."
