@@ -1,6 +1,6 @@
 import { Args, ArgsType, Field, Query, Resolver } from '@nestjs/graphql';
 import { User } from '../models/user.model';
-import { UserService } from '../services/user.service';
+import { UserService } from './user.service';
 
 @ArgsType()
 class UserArgs {

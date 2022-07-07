@@ -1,6 +1,6 @@
 import { Args, ArgsType, Field, Query, Resolver } from '@nestjs/graphql';
 import { Comment } from '../models/comment.model';
-import { CommentService } from '../services/comment.service';
+import { CommentService } from './comment.service';
 
 @ArgsType()
 class CommentArgs {

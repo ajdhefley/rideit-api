@@ -1,6 +1,6 @@
 import { Args, ArgsType, Field, Query, Resolver } from '@nestjs/graphql';
 import { CoasterImage } from '../models/coaster-image.model';
-import { CoasterImageService } from '../services/coaster-image.service';
+import { CoasterImageService } from './coaster-image.service';
 
 @ArgsType()
 class CoasterImageArgs {
