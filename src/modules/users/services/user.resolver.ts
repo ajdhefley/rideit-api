@@ -4,8 +4,8 @@ import { UserService } from './user.service';
 
 @ArgsType()
 class UserArgs {
-    @Field(type => Number, { nullable: false })
-    userId: number;
+    @Field(type => String, { nullable: false })
+    username: string;
 }
 
 @Resolver(of => User)
@@ -14,6 +14,6 @@ export class UserResolver {
 
     @Query(returns => User)
     async user(@Args() args: UserArgs) {
-        return this.userService.findOne(args.userId);
+        return this.userService.findOne(args.username);
     }
 }

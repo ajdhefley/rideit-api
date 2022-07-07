@@ -1,16 +1,42 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { UsersModule } from '../users/users.module';
 import { LoginController } from './controllers/login.controller';
 import { RedirectController } from './controllers/redirect.controller';
+import { AuthResolver } from './services/auth.resolver';
 import { AuthService } from './services/auth.service';
+import { FacebookStrategy } from './strategies/facebook.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
-  imports: [],
+  imports: [
+    PassportModule,
+
+    UsersModule,
+
+    forwardRef(() => UsersModule),
+    JwtModule.registerAsync({
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+            secret: configService.get<string>('JWT_SECRET'),
+            signOptions: { expiresIn: '60s' }
+        }),
+        inject: [ConfigService]
+    })
+  ],
   controllers: [
     LoginController,
     RedirectController
   ],
   providers: [
-    AuthService
+    AuthService,
+    AuthResolver,
+    //FacebookStrategy,
+    //GoogleStrategy,
+    LocalStrategy
   ]
 })
 export class AuthModule {}

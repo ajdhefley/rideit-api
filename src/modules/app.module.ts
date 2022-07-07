@@ -13,6 +13,8 @@ import { CoasterImageEntity } from './coasters/models/coaster-image.entity';
 import { CoasterEntity } from './coasters/models/coaster.entity';
 import { CommentsModule } from './comments/comments.module';
 import { CommentEntity } from './comments/models/comment.entity';
+import { UserEntity } from './users/models/user.entity';
+import { UsersModule } from './users/users.module';
 
 @Module({
     imports: [
@@ -23,6 +25,8 @@ import { CommentEntity } from './comments/models/comment.entity';
         CommentsModule,
 
         CoastersModule,
+        
+        UsersModule,
 
         GraphQLModule.forRoot<ApolloDriverConfig>({
             driver: ApolloDriver,
@@ -40,7 +44,8 @@ import { CommentEntity } from './comments/models/comment.entity';
             entities: [
               CoasterEntity,
               CoasterImageEntity,
-              CommentEntity
+              CommentEntity,
+              UserEntity
             ],
         })
     ],

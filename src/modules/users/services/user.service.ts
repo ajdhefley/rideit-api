@@ -10,9 +10,9 @@ export class UserService {
         private userRepository: Repository<UserEntity>
     ) { }
 
-    findOne(UserId: number): Promise<UserEntity> {
+    findOne(Username: string) {
         return this.userRepository.findOne({
-            where: { UserId }
+            where: { Username }
         });
     }
 }
