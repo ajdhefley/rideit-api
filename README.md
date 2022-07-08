@@ -1,6 +1,4 @@
-> ### Backend (NestJS, GraphQL, TypeORM, MySQL) for a roller coaster ranking platform.
-
-----------
+Backend [NestJS (Express), GraphQL, TypeORM, MySQL] for a roller coaster ranking platform.
 
 # Getting started
 
@@ -40,10 +38,15 @@ Build the application:
 
 ## Environment variables
 
+- `DB_NAME` - Name of database
 - `DB_HOST` - DB server host (does not include port)
 - `DB_USER` - DB server username
 - `DB_PASSWORD` - DB server password
 - `PORT` - Port on which API is hosted
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_SECRET`
+- `FACEBOOK_APP_ID`
+- `FACEBOOK_APP_SECRET`
 
 ----------
 
