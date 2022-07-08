@@ -186,8 +186,8 @@ async function scrapeImages(link) {
 async function saveToDb(details, imageUrls) {
     const coasterCmd = `
         INSERT INTO Coasters (
-            Park,
             Name,
+            Park,
             Url,
             Type,
             Model,
