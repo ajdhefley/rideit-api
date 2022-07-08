@@ -10,7 +10,7 @@ export class CoasterImageService {
         private coasterImageRepository: Repository<CoasterImageEntity>
     ) { }
 
-    findBy(CoasterId: number): Promise<CoasterImageEntity[]> {
+    findBy(CoasterId: number) {
         return this.coasterImageRepository.findBy({ CoasterId });
     }
 }

@@ -10,18 +10,18 @@ export class CoasterService {
         private coasterRepository: Repository<CoasterEntity>
     ) { }
 
-    findAll(): Promise<CoasterEntity[]> {
+    findAll() {
         return this.coasterRepository.find();
     }
 
-    findLike(Name: string): Promise<CoasterEntity[]> {
+    findLike(Name: string) {
         return this.coasterRepository
             .createQueryBuilder('coaster')
             .where('coaster.Name LIKE :name', { name: `%${Name}%` })
             .getMany();
     }
 
-    findOneBy(Url: string): Promise<CoasterEntity> {
+    findOneBy(Url: string) {
         return this.coasterRepository.findOneBy({ Url });
     }
 }
