@@ -59,7 +59,7 @@ async function getCoasters() {
 
 async function run() {
     Connection.connect()
-    await encodeAllImages();
+    await encodeAllImages()
 }
 
 async function dispose() {

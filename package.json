@@ -15,7 +15,8 @@
     "test:ci": "jest --config ./jest.json",
     "test:e2e": "jest --config ./jest-e2e.json",
     "tools:encoder": "cd tools/image-encoder && node .",
-    "tools:scraper": "cd tools/coaster-scraper && node ."
+    "tools:scraper": "cd tools/coaster-scraper && node .",
+    "tools:mock": "cd tools/mock-data-creator && node ."
   },
   "dependencies": {
     "@nestjs/apollo": "^10.0.16",

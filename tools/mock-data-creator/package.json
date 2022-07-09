@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "lorem-ipsum": "^2.0.8",
     "minimist": "^1.2.6",
     "mysql": "^2.18.1"
   },
