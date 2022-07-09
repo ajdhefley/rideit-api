@@ -13,6 +13,7 @@ import { CoasterImageEntity } from './coasters/models/coaster-image.entity';
 import { CoasterEntity } from './coasters/models/coaster.entity';
 import { CommentsModule } from './comments/comments.module';
 import { CommentEntity } from './comments/models/comment.entity';
+import { ReviewsModule } from './reviews/reviews.module';
 import { UserEntity } from './users/models/user.entity';
 import { UsersModule } from './users/users.module';
 
@@ -23,6 +24,8 @@ import { UsersModule } from './users/users.module';
         AuthModule,
 
         CommentsModule,
+
+        ReviewsModule,
 
         CoastersModule,
         
