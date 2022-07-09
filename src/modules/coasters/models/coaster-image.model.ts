@@ -3,11 +3,11 @@ import { Field, ObjectType } from '@nestjs/graphql';
 @ObjectType()
 export class CoasterImage {
     @Field()
-    CoasterId: number;
+    coasterId: number;
 
     @Field()
-    ImageUrl: string;
+    imageUrl: string;
 
     @Field({ nullable: true })
-    Base64: string;
+    base64: string;
 }

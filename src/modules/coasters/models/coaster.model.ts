@@ -4,64 +4,64 @@ import { CoasterImage } from './coaster-image.model';
 @ObjectType()
 export class Coaster {
     @Field(type => ID)
-    CoasterId: number;
+    coasterId: number;
 
     @Field(type => String, { nullable: true })
-    Name: string;
+    name: string;
 
     @Field(type => String, { nullable: true })
-    Park: string;
+    park: string;
 
     @Field(type => String, { nullable: true })
-    Type: string;
+    type: string;
 
     @Field(type => String, { nullable: true })
-    Model: string;
+    model: string;
 
     @Field(type => String, { nullable: true })
-    OpeningDate: string;
+    openingDate: string;
 
     @Field(type => String, { nullable: true })
-    Manufacturer: string;
+    manufacturer: string;
 
     @Field(type => Int, { nullable: true })
-    HeightInFt: number;
+    heightInFt: number;
 
     @Field(type => Int, { nullable: true })
-    DropInFt: number;
+    dropInFt: number;
 
     @Field(type => Int, { nullable: true })
-    LengthInFt: number;
+    lengthInFt: number;
 
     @Field(type => Int, { nullable: true })
-    SpeedInMph: number;
+    speedInMph: number;
 
     @Field(type => Int, { nullable: true })
-    Inversions: number;
+    inversions: number;
 
     @Field(type => String, { nullable: true })
-    ColorPrimary: string;
+    colorPrimary: string;
 
     @Field(type => String, { nullable: true })
-    ColorSecondary: string;
+    colorSecondary: string;
 
     @Field(type => String, { nullable: false })
-    Url: string;
+    url: string;
 
     @Field(type => Int, { nullable: true })
-    CarsPerTrain: number;
+    carsPerTrain: number;
 
     @Field(type => Int, { nullable: true })
-    RowsPerCar: number;
+    rowsPerCar: number;
 
     @Field(type => Int, { nullable: true })
-    InsideSeatsPerRow: number;
+    insideSeatsPerRow: number;
 
     @Field(type => Int, { nullable: true })
-    OutsideSeatsPerRow: number;
+    outsideSeatsPerRow: number;
 
     @Field(type => [CoasterImage], { nullable: true })
-    ImgList: CoasterImage[];
+    imgList: CoasterImage[];
 
     // TODO
     userRating: number;

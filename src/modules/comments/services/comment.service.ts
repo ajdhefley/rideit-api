@@ -10,7 +10,7 @@ export class CommentService {
         private commentRepository: Repository<CommentEntity>
     ) { }
 
-    findBy(CoasterId: number) {
-        return this.commentRepository.findBy({ CoasterId });
+    findBy(coasterId: number) {
+        return this.commentRepository.findBy({ coasterId });
     }
 }

@@ -3,20 +3,20 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 @ObjectType()
 export class Comment {
     @Field(type => ID)
-    CommentId: number;
+    commentId: number;
 
     @Field()
-    CoasterId: number;
+    coasterId: number;
 
     @Field()
-    Author: string;
+    author: string;
 
     @Field()
-    Body: string;
+    body: string;
 
     @Field()
-    Timestamp: Date;
+    timestamp: Date;
 
     @Field()
-    LikeCount: number;
+    likeCount: number;
 }

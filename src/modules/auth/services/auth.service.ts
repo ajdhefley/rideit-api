@@ -19,7 +19,7 @@ export class AuthService {
         if (!user) {
             throw new BadRequestException();
         } else {
-            const { Password, ...Passwordless } = user;
+            const { password: Password, ...Passwordless } = user;
 
             return {
                 access_token: this.jwtService.sign(Passwordless),
@@ -29,10 +29,10 @@ export class AuthService {
 
     async validateUser(username: string, password: string) {
         const user = await this.usersService.findOne(username);
-        const match = await bcrypt.compare(password, user?.Password ?? '');
+        const match = await bcrypt.compare(password, user?.password ?? '');
 
         if (match) {
-            delete user.Password;
+            delete user.password;
             return user;
         }
 

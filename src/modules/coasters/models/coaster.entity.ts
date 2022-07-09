@@ -3,59 +3,59 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('Coasters')
 export class CoasterEntity {
     @PrimaryGeneratedColumn()
-    CoasterId: number;
+    coasterId: number;
 
     @Column()
-    Name: string;
+    name: string;
 
     @Column()
-    Park: string;
+    park: string;
 
     @Column()
-    Type: string;
+    type: string;
 
     @Column()
-    Model: string;
+    model: string;
 
     @Column()
-    OpeningDate: string;
+    openingDate: string;
 
     @Column()
-    Manufacturer: string;
+    manufacturer: string;
 
     @Column()
-    HeightInFt: number;
+    heightInFt: number;
 
     @Column()
-    DropInFt: number;
+    dropInFt: number;
 
     @Column()
-    LengthInFt: number;
+    lengthInFt: number;
 
     @Column()
-    SpeedInMph: number;
+    speedInMph: number;
 
     @Column()
-    Inversions: number;
+    inversions: number;
 
     @Column()
-    ColorPrimary: string;
+    colorPrimary: string;
 
     @Column()
-    ColorSecondary: string;
+    colorSecondary: string;
 
     @Column()
-    Url: string;
+    url: string;
 
     @Column()
-    CarsPerTrain: number;
+    carsPerTrain: number;
 
     @Column()
-    RowsPerCar: number;
+    rowsPerCar: number;
 
     @Column()
-    InsideSeatsPerRow: number;
+    insideSeatsPerRow: number;
 
     @Column()
-    OutsideSeatsPerRow: number;
+    outsideSeatsPerRow: number;
 }

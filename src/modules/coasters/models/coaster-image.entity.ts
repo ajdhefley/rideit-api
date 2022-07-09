@@ -3,14 +3,14 @@ import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('CoasterImages')
 export class CoasterImageEntity {
     @PrimaryGeneratedColumn()
-    CoasterImageId: number;
+    coasterImageId: number;
 
     @Column()
-    CoasterId: number;
+    coasterId: number;
 
     @Column()
-    ImageUrl: string;
+    imageUrl: string;
 
     @Column()
-    Base64: string;
+    base64: string;
 }

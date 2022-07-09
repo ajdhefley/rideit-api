@@ -14,14 +14,14 @@ export class CoasterService {
         return this.coasterRepository.find();
     }
 
-    findLike(Name: string) {
+    findLike(name: string) {
         return this.coasterRepository
             .createQueryBuilder('coaster')
-            .where('coaster.Name LIKE :name', { name: `%${Name}%` })
+            .where('coaster.Name LIKE :name', { name: `%${name}%` })
             .getMany();
     }
 
-    findOneBy(Url: string) {
-        return this.coasterRepository.findOneBy({ Url });
+    findOneBy(url: string) {
+        return this.coasterRepository.findOneBy({ url });
     }
 }

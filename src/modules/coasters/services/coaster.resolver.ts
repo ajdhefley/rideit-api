@@ -39,7 +39,7 @@ export class CoasterResolver {
     }
 
     @ResolveField(returns => [CoasterImage])
-    async ImgList(@Parent() coaster: Coaster) {
-        return await this.coasterImageService.findBy(coaster.CoasterId);
+    async imgList(@Parent() coaster: Coaster) {
+        return await this.coasterImageService.findBy(coaster.coasterId);
     }
 }

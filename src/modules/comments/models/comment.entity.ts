@@ -3,20 +3,20 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('Comments')
 export class CommentEntity {
     @PrimaryGeneratedColumn()
-    CommentId: number;
+    commentId: number;
 
     @Column()
-    CoasterId: number;
+    coasterId: number;
 
     @Column()
-    Author: string;
+    author: string;
 
     @Column()
-    Body: string;
+    body: string;
 
     @Column()
-    Timestamp: Date;
+    timestamp: Date;
 
     @Column()
-    LikeCount: number;
+    likeCount: number;
 }

@@ -10,9 +10,9 @@ export class UserService {
         private userRepository: Repository<UserEntity>
     ) { }
 
-    findOne(Username: string) {
+    findOne(username: string) {
         return this.userRepository.findOne({
-            where: { Username }
+            where: { username }
         });
     }
 }
