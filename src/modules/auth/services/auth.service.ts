@@ -1,41 +1,32 @@
+
 import * as bcrypt from 'bcrypt';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../../users/services/user.service';
-import { User } from '../../users/models/user.model';
-import { BadRequestException } from '../../../infrastructure/exceptions/bad-request.exception';
+import { UserService } from '../../../modules/users/services/user.service';
+import { UnauthorizedException } from '../../../infrastructure/exceptions/unauthorized.exception';
 
 @Injectable()
 export class AuthService {
     constructor(
-        @Inject(forwardRef(() => UserService))
         private usersService: UserService,
         private jwtService: JwtService,
     ) { }
 
     async loginUser(username: string, password: string) {
-        const user = await this.validateUser(username, password);
+        const user = await this.usersService.findOne(username);
 
         if (!user) {
-            throw new BadRequestException();
-        } else {
+            throw new UnauthorizedException();
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+
+        if (match) {
             const { password: Password, ...Passwordless } = user;
 
             return {
                 access_token: this.jwtService.sign(Passwordless),
             };
         }
-    }
-
-    async validateUser(username: string, password: string) {
-        const user = await this.usersService.findOne(username);
-        const match = await bcrypt.compare(password, user?.password ?? '');
-
-        if (match) {
-            delete user.password;
-            return user;
-        }
-
-        return null;
     }
 }

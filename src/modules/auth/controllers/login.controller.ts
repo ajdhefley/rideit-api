@@ -1,5 +1,6 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
+import * as moment from 'moment';
+import { Controller, Body, Req, Res, UseGuards, Post } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { FacebookGuard } from '../guards/facebook.guard';
 import { GoogleGuard } from '../guards/google.guard';
@@ -8,15 +9,29 @@ import { GoogleGuard } from '../guards/google.guard';
 export class LoginController {
     constructor(private readonly authService: AuthService) { }
 
-    @Get('google')
+    @Post('')
+    async login(@Req() req: Request, @Res() res: Response, @Body() body) {
+        const user = await this.authService.loginUser(body.username, body.password);
+
+        res.cookie('auth', { token: user.access_token }, {
+            expires: moment().add(process.env.ACCESS_TOKEN_EXPIRATION_MINUTES, 'minutes').toDate(),
+            sameSite: 'strict',
+            httpOnly: true
+        });
+
+        res.status(200);
+        res.send(user);
+    }
+
+    @Post('google')
     @UseGuards(GoogleGuard)
-    google() {
+    async google() {
         return;
     }
 
-    @Get('facebook')
+    @Post('facebook')
     @UseGuards(FacebookGuard)
-    facebook() {
+    async facebook() {
         return;
     }
 }

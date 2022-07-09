@@ -5,11 +5,10 @@ import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../users/users.module';
 import { LoginController } from './controllers/login.controller';
 import { RedirectController } from './controllers/redirect.controller';
-import { AuthResolver } from './services/auth.resolver';
 import { AuthService } from './services/auth.service';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -33,10 +32,9 @@ import { LocalStrategy } from './strategies/local.strategy';
   ],
   providers: [
     AuthService,
-    AuthResolver,
     //FacebookStrategy,
     //GoogleStrategy,
-    LocalStrategy
+    JwtStrategy
   ]
 })
 export class AuthModule {}
