@@ -1,9 +1,7 @@
 import * as moment from 'moment';
-import { Controller, Body, Req, Res, UseGuards, Post } from '@nestjs/common';
+import { Controller, Body, Req, Res, Post } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
-import { FacebookGuard } from '../guards/facebook.guard';
-import { GoogleGuard } from '../guards/google.guard';
 
 @Controller('auth/login')
 export class LoginController {
@@ -21,17 +19,5 @@ export class LoginController {
 
         res.status(200);
         res.send(user);
-    }
-
-    @Post('google')
-    @UseGuards(GoogleGuard)
-    async google() {
-        return;
-    }
-
-    @Post('facebook')
-    @UseGuards(FacebookGuard)
-    async facebook() {
-        return;
     }
 }

@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../users/users.module';
 import { LoginController } from './controllers/login.controller';
-import { RedirectController } from './controllers/redirect.controller';
+import { OAuthController } from './controllers/oauth.controller';
 import { AuthService } from './services/auth.service';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
@@ -28,12 +28,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   ],
   controllers: [
     LoginController,
-    RedirectController
+    OAuthController
   ],
   providers: [
     AuthService,
     //FacebookStrategy,
-    //GoogleStrategy,
+    GoogleStrategy,
     JwtStrategy
   ]
 })

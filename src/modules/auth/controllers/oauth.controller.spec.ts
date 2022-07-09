@@ -1,8 +1,8 @@
 import { NestJSTestSuite } from '@ajdhefley/test-suite-nest';
 import { AuthService } from '../services/auth.service';
-import { RedirectController } from './redirect.controller';
+import { OAuthController } from './oauth.controller';
 
-new NestJSTestSuite(RedirectController)
+new NestJSTestSuite(OAuthController)
     .addMocks(AuthService)
     .addTest('should create', (controller) => {
         expect(controller).toBeTruthy();
