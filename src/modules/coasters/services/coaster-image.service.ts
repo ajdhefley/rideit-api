@@ -10,7 +10,11 @@ export class CoasterImageService {
         private coasterImageRepository: Repository<CoasterImageEntity>
     ) { }
 
-    findBy(coasterId: number) {
-        return this.coasterImageRepository.findBy({ coasterId });
+    findBy(coasterUrl: string) {
+        return this.coasterImageRepository
+            .createQueryBuilder('coasterImage')
+            .leftJoinAndSelect('coasterImage.coaster', 'c')
+            .where('c.Url = :coasterUrl', { coasterUrl })
+            .getMany();
     }
 }

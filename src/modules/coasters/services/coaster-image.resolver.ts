@@ -4,8 +4,8 @@ import { CoasterImageService } from './coaster-image.service';
 
 @ArgsType()
 class CoasterImageArgs {
-    @Field(type => Number, { nullable: false })
-    coasterId: number;
+    @Field(type => String, { nullable: false })
+    coasterUrl: string;
 }
 
 @Resolver(of => CoasterImage)
@@ -14,6 +14,6 @@ export class CoasterImageResolver {
 
     @Query(returns => [CoasterImage])
     async coasterImages(@Args() args: CoasterImageArgs) {
-        return this.coasterImageService.findBy(args.coasterId);
+        return this.coasterImageService.findBy(args.coasterUrl);
     }
 }

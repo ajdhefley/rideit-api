@@ -1,12 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
+import { CoasterEntity } from '../../coasters/models/coaster.entity';
 
 @Entity('Reviews')
 export class ReviewEntity {
     @PrimaryGeneratedColumn()
     reviewId: number;
-
-    @Column()
-    coasterId: number;
 
     @Column()
     userId: string;
@@ -16,4 +14,8 @@ export class ReviewEntity {
 
     @Column()
     body: string;
+
+    @JoinColumn({ name: 'coasterId' })
+    @ManyToOne(type => CoasterEntity, c => c.reviews, {  })
+    coaster: CoasterEntity;
 }

@@ -37,9 +37,4 @@ export class CoasterResolver {
     async coasterFilter(@Args() args: CoasterFilterArgs) {
         return await this.coasterService.findLike(args.name);
     }
-
-    @ResolveField(returns => [CoasterImage])
-    async imgList(@Parent() coaster: Coaster) {
-        return await this.coasterImageService.findBy(coaster.coasterId);
-    }
 }

@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ReviewEntity } from 'src/modules/reviews/models/review.entity';
+import { CoasterImageEntity } from './coaster-image.entity';
 
 @Entity('Coasters')
 export class CoasterEntity {
@@ -58,4 +60,10 @@ export class CoasterEntity {
 
     @Column()
     outsideSeatsPerRow: number;
+
+    @OneToMany(type => ReviewEntity, r => r.coaster)
+    reviews: ReviewEntity[];
+
+    @OneToMany(type => CoasterImageEntity, r => r.coaster)
+    images: CoasterImageEntity[];
 }
