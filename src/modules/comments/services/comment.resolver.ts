@@ -4,8 +4,8 @@ import { CommentService } from './comment.service';
 
 @ArgsType()
 class CommentArgs {
-    @Field(type => Number, { nullable: false })
-    coasterId: number;
+    @Field(type => String, { nullable: false })
+    coasterUrl: string;
 }
 
 @Resolver(of => Comment)
@@ -14,6 +14,6 @@ export class CommentResolver {
 
     @Query(returns => [Comment])
     async comments(@Args() args: CommentArgs) {
-        return this.commentService.findBy(args.coasterId);
+        return this.commentService.findBy(args.coasterUrl);
     }
 }

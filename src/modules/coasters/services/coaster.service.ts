@@ -17,11 +17,16 @@ export class CoasterService {
     findLike(name: string) {
         return this.coasterRepository
             .createQueryBuilder('coaster')
+            .leftJoinAndSelect('coaster.images', 'ci')
             .where('coaster.Name LIKE :name', { name: `%${name}%` })
             .getMany();
     }
 
     findOneBy(url: string) {
-        return this.coasterRepository.findOneBy({ url });
+        return this.coasterRepository
+            .createQueryBuilder('coaster')
+            .leftJoinAndSelect('coaster.images', 'ci')
+            .where('coaster.Url = :url', { url })
+            .getOne();
     }
 }

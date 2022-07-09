@@ -61,7 +61,7 @@ export class Coaster {
     outsideSeatsPerRow: number;
 
     @Field(type => [CoasterImage], { nullable: true })
-    imgList: CoasterImage[];
+    images: CoasterImage[];
 
     // TODO
     userRating: number;

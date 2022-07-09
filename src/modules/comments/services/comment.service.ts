@@ -10,7 +10,11 @@ export class CommentService {
         private commentRepository: Repository<CommentEntity>
     ) { }
 
-    findBy(coasterId: number) {
-        return this.commentRepository.findBy({ coasterId });
+    findBy(coasterUrl: string) {
+        return this.commentRepository
+            .createQueryBuilder('comment')
+            .leftJoinAndSelect('comment.coaster', 'c')
+            .where('c.Url = :coasterUrl', { coasterUrl })
+            .getMany();
     }
 }

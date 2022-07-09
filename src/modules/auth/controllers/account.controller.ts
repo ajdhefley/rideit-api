@@ -3,11 +3,11 @@ import { Controller, Body, Req, Res, Post } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 
-@Controller('auth/login')
-export class LoginController {
+@Controller('auth/account')
+export class AccountController {
     constructor(private readonly authService: AuthService) { }
 
-    @Post('')
+    @Post('login')
     async login(@Req() req: Request, @Res() res: Response, @Body() body) {
         const user = await this.authService.loginUser(body.username, body.password);
 
@@ -19,5 +19,11 @@ export class LoginController {
 
         res.status(200);
         res.send(user);
+    }
+
+    @Post('logout')
+    async logout(@Req() req: Request, @Res() res: Response) {
+        res.clearCookie('auth');
+        res.end();
     }
 }

@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Coaster } from '../../coasters/models/coaster.model';
 
 @ObjectType()
 export class Comment {
@@ -6,10 +7,7 @@ export class Comment {
     commentId: number;
 
     @Field()
-    coasterId: number;
-
-    @Field()
-    author: string;
+    userId: number;
 
     @Field()
     body: string;
@@ -19,4 +17,7 @@ export class Comment {
 
     @Field()
     likeCount: number;
+
+    @Field()
+    coaster: Coaster;
 }

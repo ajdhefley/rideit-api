@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ReviewEntity } from 'src/modules/reviews/models/review.entity';
 import { CoasterImageEntity } from './coaster-image.entity';
+import { CommentEntity } from 'src/modules/comments/models/comment.entity';
 
 @Entity('Coasters')
 export class CoasterEntity {
@@ -63,6 +64,9 @@ export class CoasterEntity {
 
     @OneToMany(type => ReviewEntity, r => r.coaster)
     reviews: ReviewEntity[];
+
+    @OneToMany(type => CommentEntity, r => r.coaster)
+    comments: CommentEntity[];
 
     @OneToMany(type => CoasterImageEntity, r => r.coaster)
     images: CoasterImageEntity[];

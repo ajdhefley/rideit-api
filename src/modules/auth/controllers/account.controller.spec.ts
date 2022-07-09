@@ -1,8 +1,8 @@
 import { NestJSTestSuite } from '@ajdhefley/test-suite-nest';
-import { LoginController } from './login.controller';
+import { AccountController } from './account.controller';
 import { AuthService } from '../services/auth.service';
 
-new NestJSTestSuite(LoginController)
+new NestJSTestSuite(AccountController)
     .addMocks(AuthService)
     .addTest('should create', (controller) => {
         expect(controller).toBeTruthy();
