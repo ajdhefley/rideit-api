@@ -52,13 +52,17 @@ async function createMockData() {
     const coasters = await getCoasters()
 
     return promiseMap(coasters, async (coaster) => {
-        const numReviews = getRandom(Args.reviews - 10, Args.reviews + 10)
-        const numComments = getRandom(Args.comments - 10, Args.comments + 10)
+        const intervalReviews = Args.reviews * 0.20
+        const intervalComments = Args.comments * 0.20
+        const numReviews = getRandom(Args.reviews - intervalReviews, Args.reviews + intervalReviews)
+        const numComments = getRandom(Args.comments - intervalComments, Args.comments + intervalComments)
 
         for (let i = 1; i <= numReviews; i++) {
             const reviewTitle = lorem.generateWords(getRandom(4, 10))
             const reviewText = lorem.generateParagraphs(getRandom(1, 3))
-            await insertReview(coaster.CoasterId, coaster.Name, 1, reviewTitle, reviewText)
+            const randomRating = getRandom(1, 5)
+            await insertReview(coaster.CoasterId, coaster.Name, 1, reviewTitle, reviewText, randomRating)
+            await insertReviewTagsForLast()
         }
 
         for (let i = 1; i <= numComments; i++) {
@@ -73,7 +77,7 @@ async function getCoasters() {
 }
 
 async function insertComment(coasterId, coasterName, userId, body) {
-    console.info(`Inserting comment for ${coasterName}:\n"${body}"\n`)
+    console.info(`Inserting comment for ${coasterName}`)
 
     await executeQuery(Connection, `
         INSERT INTO Comments (CoasterId, UserId, Body)
@@ -81,24 +85,35 @@ async function insertComment(coasterId, coasterName, userId, body) {
     `, [coasterId, userId, body])
 }
 
-async function insertReview(coasterId, coasterName, userId, title, body) {
-    console.info(`Inserting review for ${coasterName}:\n"${body}"\n`)
+async function insertReview(coasterId, coasterName, userId, title, body, rating) {
+    console.info(`Inserting review for ${coasterName} (${rating} / 5):\n"${title}"\n`)
 
     await executeQuery(Connection, `
-        INSERT INTO Reviews (CoasterId, UserId, Title, Body)
-        VALUES (?, ?, ?, ?)
-    `, [coasterId, userId, title, body]) 
+        INSERT INTO Reviews (CoasterId, UserId, Title, Body, Rating)
+        VALUES (?, ?, ?, ?, ?)
+    `, [coasterId, userId, title, body, rating]) 
+}
+
+async function insertReviewTagsForLast() {
+    const tags = ['Roughness', 'Head Banging', 'Laterals', 'Air Time', 'Low Capacity', 'Head Choppers']
+
+    const randomTag1 = tags[getRandom(0, tags.length-1)]
+    const randomTag2 = tags[getRandom(0, tags.length-1)]
+    const randomTag3 = tags[getRandom(0, tags.length-1)]
 
     await executeQuery(Connection, `
-        INSERT INTO ReviewTagXref (ReviewId, ReviewTagId)
-        VALUES (LAST_INSERT_ID(), 1), (LAST_INSERT_ID(), 2), (LAST_INSERT_ID(), 3)
-    `) 
+        INSERT INTO ReviewTags (ReviewId, Tag)
+        VALUES (LAST_INSERT_ID(), ?), (LAST_INSERT_ID(), ?), (LAST_INSERT_ID(), ?)
+    `, [randomTag1, randomTag2, randomTag3]) 
 }
 
 async function run() {
     Connection.connect()
 
     if (Args.reset) {
+        console.info('Clearing data.')
+        await executeQuery(Connection, 'TRUNCATE Reviews')
+        await executeQuery(Connection, 'TRUNCATE ReviewTags')
         await executeQuery(Connection, 'TRUNCATE Comments')
     }
 

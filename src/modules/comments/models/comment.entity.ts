@@ -1,13 +1,11 @@
 import { CoasterEntity } from 'src/modules/coasters/models/coaster.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { UserEntity } from 'src/modules/users/models/user.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('Comments')
 export class CommentEntity {
     @PrimaryGeneratedColumn()
     commentId: number;
-
-    @Column()
-    userId: number;
 
     @Column()
     body: string;
@@ -17,6 +15,10 @@ export class CommentEntity {
 
     @Column()
     likeCount: number;
+
+    @JoinColumn({ name: 'userId' })
+    @ManyToOne(type => UserEntity, c => c.comments, {  })
+    user: UserEntity;
 
     @JoinColumn({ name: 'coasterId' })
     @ManyToOne(type => CoasterEntity, c => c.comments, {  })
