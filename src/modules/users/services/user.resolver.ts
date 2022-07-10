@@ -14,6 +14,6 @@ export class UserResolver {
 
     @Query(returns => User)
     async user(@Args() args: UserArgs) {
-        return this.userService.findOne(args.username);
+        return this.userService.findOneByUsername(args.username);
     }
 }
