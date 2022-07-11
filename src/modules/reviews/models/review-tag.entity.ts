@@ -1,11 +1,11 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('ReviewTags')
+@Entity('reviewtags')
 export class ReviewTagEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'reviewtagid' })
     reviewTagId: number;
 
-    @Column()
+    @Column({ name: 'reviewid' })
     reviewId: number;
 
     @Column()

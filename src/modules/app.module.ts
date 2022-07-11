@@ -40,7 +40,7 @@ import { UsersModule } from './users/users.module';
         }),
 
         TypeOrmModule.forRoot({
-            type: 'mysql',
+            type: 'postgres',
             host: process.env.DB_HOST,
             username: process.env.DB_USER,
             password: process.env.DB_PASSWORD,

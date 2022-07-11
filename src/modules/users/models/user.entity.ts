@@ -1,10 +1,10 @@
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CommentEntity } from 'src/modules/comments/models/comment.entity';
 import { ReviewEntity } from 'src/modules/reviews/models/review.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('Users')
+@Entity('users')
 export class UserEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'userid' })
     userId: number;
 
     @Column()

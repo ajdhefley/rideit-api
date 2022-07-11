@@ -3,9 +3,9 @@ import { ReviewEntity } from 'src/modules/reviews/models/review.entity';
 import { CoasterImageEntity } from './coaster-image.entity';
 import { CommentEntity } from 'src/modules/comments/models/comment.entity';
 
-@Entity('Coasters')
+@Entity('coasters')
 export class CoasterEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'coasterid' })
     coasterId: number;
 
     @Column()
@@ -20,46 +20,46 @@ export class CoasterEntity {
     @Column()
     model: string;
 
-    @Column()
+    @Column({ name: 'openingdate' })
     openingDate: string;
 
     @Column()
     manufacturer: string;
 
-    @Column()
+    @Column({ name: 'heightinft' })
     heightInFt: number;
 
-    @Column()
+    @Column({ name: 'dropinft' })
     dropInFt: number;
 
-    @Column()
+    @Column({ name: 'lengthinft' })
     lengthInFt: number;
 
-    @Column()
+    @Column({ name: 'speedinmph' })
     speedInMph: number;
 
     @Column()
     inversions: number;
 
-    @Column()
+    @Column({ name: 'colorprimary' })
     colorPrimary: string;
 
-    @Column()
+    @Column({ name: 'colorsecondary' })
     colorSecondary: string;
 
     @Column()
     url: string;
 
-    @Column()
+    @Column({ name: 'carspertrain' })
     carsPerTrain: number;
 
-    @Column()
+    @Column({ name: 'rowspercar' })
     rowsPerCar: number;
 
-    @Column()
+    @Column({ name: 'insideseatsperrow' })
     insideSeatsPerRow: number;
 
-    @Column()
+    @Column({ name: 'outsideseatsperrow' })
     outsideSeatsPerRow: number;
 
     @OneToMany(type => ReviewEntity, r => r.coaster)

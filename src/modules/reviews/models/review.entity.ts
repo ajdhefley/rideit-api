@@ -2,9 +2,9 @@ import { UserEntity } from 'src/modules/users/models/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { CoasterEntity } from '../../coasters/models/coaster.entity';
 
-@Entity('Reviews')
+@Entity('reviews')
 export class ReviewEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'reviewid' })
     reviewId: number;
 
     @Column()
@@ -16,11 +16,11 @@ export class ReviewEntity {
     @Column()
     rating: number;
 
-    @JoinColumn({ name: 'coasterId' })
+    @JoinColumn({ name: 'coasterid' })
     @ManyToOne(type => CoasterEntity, c => c.reviews, {  })
     coaster: CoasterEntity;
 
-    @JoinColumn({ name: 'userId' })
+    @JoinColumn({ name: 'userid' })
     @OneToMany(type => UserEntity, c => c.reviews, {  })
     author: UserEntity;
 
