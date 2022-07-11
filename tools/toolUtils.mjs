@@ -1,12 +1,3 @@
-export function executeQuery(conn, cmd, params) {
-    return new Promise((resolve, reject) => {
-        conn.query(cmd, params, (error, results) => {
-            if (error) reject(error)
-            resolve(results || null)
-        })
-    })
-}
-
 export function getElementsByXPath(xpath, parent) {
     let results = []
     let query = document.evaluate(xpath, parent,

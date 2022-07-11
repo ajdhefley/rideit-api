@@ -19,10 +19,10 @@
  *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase --page=15 --reset
  **/
 
-import mysql from 'mysql'
+import postgres from 'pg'
 import puppeteer from 'puppeteer'
 import minimist from 'minimist'
-import { executeQuery, getElementsByXPath } from '../toolUtils.mjs'
+import { getElementsByXPath } from '../toolUtils.mjs'
 
 /**
  * Allows accessing arguments/flags by name instead of array index.
@@ -42,12 +42,12 @@ const BaseUrl = 'https://rcdb.com/r.htm?ex=on&st=93&ol=1&ot=2&cs=277'
 /**
  * Tool uses a single open connection.
  **/
-const Connection = mysql.createConnection({
+const { Client } = postgres
+const SqlClient = new Client({
     host     : Args['db-host'],
-    user     : Args['db-user'],
-    password : Args['db-password'],
     database : Args['db-name'],
-    multipleStatements: true
+    user     : Args['db-user'],
+    password : Args['db-password']
 })
 
 /**
@@ -203,15 +203,21 @@ async function saveToDb(details, imageUrls) {
             InsideSeatsPerRow,
             OutsideSeatsPerRow
         )
-        VALUES (?)
+        VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9,
+            $10, $11, $12, $13, $14, $15, $16
+        )
+        RETURNING *
     `
     const imageCmd = `
-        INSERT INTO CoasterImages (CoasterId, ImageUrl) VALUES ?
+        INSERT INTO CoasterImages (CoasterId, ImageUrl) VALUES ($1, $2)
     `
 
     try {
-        const coasterResult = await executeQuery(Connection, coasterCmd, [Object.values(details)])
-        const imageResult = await executeQuery(Connection, imageCmd, [imageUrls.map(url => [coasterResult.insertId, url])])
+        const coasterResult = await SqlClient.query(coasterCmd, Object.values(details))
+        imageUrls.forEach(async (imageUrl) => {
+            await SqlClient.query(imageCmd, [coasterResult.rows[0].coasterid, imageUrl])
+        })
         console.info(details)
         console.info(imageUrls)
         console.info('Inserted successfully.\n')
@@ -222,11 +228,11 @@ async function saveToDb(details, imageUrls) {
 }
 
 async function run() {
-    Connection.connect()
+    SqlClient.connect()
 
     if (Args.reset) {
-        await executeQuery(Connection, 'TRUNCATE Coasters')
-        await executeQuery(Connection, 'TRUNCATE CoasterImages')
+        await SqlClient.query('TRUNCATE Coasters')
+        await SqlClient.query('TRUNCATE CoasterImages')
     }
 
     Browser = await puppeteer.launch({ headless: false })
@@ -237,7 +243,7 @@ async function run() {
 
 async function dispose() {
     Browser.close()
-    Connection.end()
+    SqlClient.end()
 }
 
 run()

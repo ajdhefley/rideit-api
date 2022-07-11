@@ -1,4 +1,4 @@
-Backend [NestJS (Express), GraphQL, TypeORM, MySQL] for a roller coaster ranking platform.
+Backend [NestJS (Express), GraphQL, TypeORM, PostgreSQL] for a roller coaster ranking platform.
 
 # Getting started
 

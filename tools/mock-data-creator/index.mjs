@@ -14,10 +14,10 @@
  *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase --reviews=17 --comments=200 --reset
  **/
 
-import mysql from 'mysql'
+import postgres from 'pg'
 import minimist from 'minimist'
 import { LoremIpsum } from 'lorem-ipsum'
-import { executeQuery, getRandom, promiseMap } from '../toolUtils.mjs'
+import { getRandom, promiseMap } from '../toolUtils.mjs'
 
 /**
  * Allows accessing arguments/flags by name instead of array index.
@@ -27,12 +27,13 @@ const Args = minimist(process.argv.slice(2))
 /**
  * Tool uses a single open connection.
  **/
-const Connection = mysql.createConnection({
-    host     : Args['db-host'],
-    user     : Args['db-user'],
-    password : Args['db-password'],
-    database : Args['db-name']
-})
+ const { Client } = postgres
+ const SqlClient = new Client({
+     host     : Args['db-host'],
+     database : Args['db-name'],
+     user     : Args['db-user'],
+     password : Args['db-password']
+ })
 
 /**
  * Random text generator.
@@ -61,67 +62,70 @@ async function createMockData() {
             const reviewTitle = lorem.generateWords(getRandom(4, 10))
             const reviewText = lorem.generateParagraphs(getRandom(1, 3))
             const randomRating = getRandom(1, 5)
-            await insertReview(coaster.CoasterId, coaster.Name, 1, reviewTitle, reviewText, randomRating)
-            await insertReviewTagsForLast()
+            const review = await insertReview(coaster.coasterid, coaster.name, 1, reviewTitle, reviewText, randomRating)
+            await insertReviewTags(review.reviewid)
         }
 
         for (let i = 1; i <= numComments; i++) {
             const commentText = lorem.generateParagraphs(getRandom(1, 3))
-            await insertComment(coaster.CoasterId, coaster.Name, 1, commentText)
+            await insertComment(coaster.coasterid, coaster.name, 1, commentText)
         }
     })
 }
 
 async function getCoasters() {
-    return await executeQuery(Connection, 'SELECT CoasterId, Name FROM Coasters')
+    const result = await SqlClient.query('SELECT CoasterId, Name FROM Coasters')
+    return result.rows
 }
 
 async function insertComment(coasterId, coasterName, userId, body) {
     console.info(`Inserting comment for ${coasterName}`)
 
-    await executeQuery(Connection, `
+    await SqlClient.query(`
         INSERT INTO Comments (CoasterId, UserId, Body)
-        VALUES (?, ?, ?)
+        VALUES ($1, $2, $3)
     `, [coasterId, userId, body])
 }
 
 async function insertReview(coasterId, coasterName, userId, title, body, rating) {
     console.info(`Inserting review for ${coasterName} (${rating} / 5):\n"${title}"\n`)
 
-    await executeQuery(Connection, `
+    const result = await SqlClient.query(`
         INSERT INTO Reviews (CoasterId, UserId, Title, Body, Rating)
-        VALUES (?, ?, ?, ?, ?)
-    `, [coasterId, userId, title, body, rating]) 
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *
+    `, [coasterId, userId, title, body, rating])
+    return result.rows[0]
 }
 
-async function insertReviewTagsForLast() {
+async function insertReviewTags(reviewId) {
     const tags = ['Roughness', 'Head Banging', 'Laterals', 'Air Time', 'Low Capacity', 'Head Choppers']
 
     const randomTag1 = tags[getRandom(0, tags.length-1)]
     const randomTag2 = tags[getRandom(0, tags.length-1)]
     const randomTag3 = tags[getRandom(0, tags.length-1)]
 
-    await executeQuery(Connection, `
+    await SqlClient.query(`
         INSERT INTO ReviewTags (ReviewId, Tag)
-        VALUES (LAST_INSERT_ID(), ?), (LAST_INSERT_ID(), ?), (LAST_INSERT_ID(), ?)
-    `, [randomTag1, randomTag2, randomTag3]) 
+        VALUES ($4, $1), ($4, $2), ($4, $3)
+    `, [randomTag1, randomTag2, randomTag3, reviewId]) 
 }
 
 async function run() {
-    Connection.connect()
+    SqlClient.connect()
 
     if (Args.reset) {
         console.info('Clearing data.')
-        await executeQuery(Connection, 'TRUNCATE Reviews')
-        await executeQuery(Connection, 'TRUNCATE ReviewTags')
-        await executeQuery(Connection, 'TRUNCATE Comments')
+        await SqlClient.query('TRUNCATE Reviews')
+        await SqlClient.query('TRUNCATE ReviewTags')
+        await SqlClient.query('TRUNCATE Comments')
     }
 
     await createMockData()
 }
 
 async function dispose() {
-    Connection.end()
+    SqlClient.end()
 }
 
 run()
