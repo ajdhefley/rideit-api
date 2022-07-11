@@ -8,6 +8,12 @@ export class Comment {
     commentId: number;
 
     @Field()
+    parentCommentId: number;
+
+    @Field()
+    userId: number;
+
+    @Field()
     body: string;
 
     @Field()
@@ -17,7 +23,7 @@ export class Comment {
     likeCount: number;
 
     @Field()
-    user: User;
+    author: User;
 
     @Field()
     coaster: Coaster;

@@ -14,7 +14,7 @@ export class CommentService {
         return this.commentRepository
             .createQueryBuilder('comment')
             .leftJoinAndSelect('comment.coaster', 'c')
-            .innerJoinAndSelect('comment.user', 'u')
+            .innerJoinAndSelect('comment.author', 'u')
             .where('c.Url = :coasterUrl', { coasterUrl })
             .getMany();
     }

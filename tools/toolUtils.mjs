@@ -1,13 +1,3 @@
-export function getElementsByXPath(xpath, parent) {
-    let results = []
-    let query = document.evaluate(xpath, parent,
-        null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
-    for (let i = 0, length = query.snapshotLength; i < length; ++i) {
-        results.push(query.snapshotItem(i))
-    }
-    return results
-}
-  
 export function promiseMap(array, func) {
     let promiseArray = array.map((item) => new Promise(async (resolve, reject) => {
         try {

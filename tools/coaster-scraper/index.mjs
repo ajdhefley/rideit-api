@@ -22,7 +22,6 @@
 import postgres from 'pg'
 import puppeteer from 'puppeteer'
 import minimist from 'minimist'
-import { getElementsByXPath } from '../toolUtils.mjs'
 
 /**
  * Allows accessing arguments/flags by name instead of array index.
@@ -58,7 +57,6 @@ let Driver = {}
 
 async function scrapeSearchResults() {
     await Driver.goto(BaseUrl)
-    await Driver.exposeFunction('getElementsByXPath', getElementsByXPath)
 
     const totalPages = await Driver.evaluate(() => {
         const lastPageLink = document.querySelector('#rfoot a:nth-last-child(2)')
@@ -89,6 +87,16 @@ async function scrapeDetails(link) {
     await Driver.goto(link)
 
     return await Driver.evaluate(() => {
+        function getElementsByXPath(xpath, document, parent) {
+            let results = []
+            let query = document.evaluate(xpath, parent,
+                null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
+            for (let i = 0, length = query.snapshotLength; i < length; ++i) {
+                results.push(query.snapshotItem(i))
+            }
+            return results
+        }
+
         const nameElem = document.querySelector('#feature > div:nth-child(1) > h1')
         const name = nameElem?.innerText
 
@@ -116,25 +124,25 @@ async function scrapeDetails(link) {
         const manufacturerElem = document.querySelector('#feature > div.scroll > p > a:nth-child(1)')
         const manufacturer = manufacturerElem?.innerText
 
-        const lengthElem = getElementsByXPath('//th[contains(text(), "Length")]/following-sibling::td[1]/span', document)
+        const lengthElem = getElementsByXPath('//th[contains(text(), "Length")]/following-sibling::td[1]/span', document, document)
         const length = lengthElem[0] ? lengthElem[0].innerText.replace(/,/g, '') : null
 
-        const heightElem = getElementsByXPath('//th[contains(text(), "Height")]/following-sibling::td[1]/span', document)
+        const heightElem = getElementsByXPath('//th[contains(text(), "Height")]/following-sibling::td[1]/span', document, document)
         const height = heightElem[0] ? heightElem[0].innerText.replace(/,/g, '') : null
 
-        const dropElem = getElementsByXPath('//th[contains(text(), "Drop")]/following-sibling::td[1]/span', document)
+        const dropElem = getElementsByXPath('//th[contains(text(), "Drop")]/following-sibling::td[1]/span', document, document)
         const drop = dropElem[0] ? dropElem[0].innerText.replace(/,/g, '') : null
 
-        const speedElem = getElementsByXPath('//th[contains(text(), "Speed")]/following-sibling::td[1]/span', document)
+        const speedElem = getElementsByXPath('//th[contains(text(), "Speed")]/following-sibling::td[1]/span', document, document)
         const speed = speedElem[0] ? speedElem[0].innerText.replace(/,/g, '') : null
 
-        const inversionsElem = getElementsByXPath('//th[contains(text(), "Inversions")]/following-sibling::td[1]', document)
+        const inversionsElem = getElementsByXPath('//th[contains(text(), "Inversions")]/following-sibling::td[1]', document, document)
         const inversions = inversionsElem[0] ? inversionsElem[0].innerText.replace(/,/g, '') : null
 
         const openingDateElem = document.querySelector('#feature > p > time')
         const openingDate = openingDateElem?.innerText
 
-        const trainInfoElem = getElementsByXPath('//*[contains(text(), "Riders are arranged")]', document)[0]
+        const trainInfoElem = getElementsByXPath('//*[contains(text(), "Riders are arranged")]', document, document)[0]
         const trainInfo = trainInfoElem?.innerText
         const numCars = trainInfo ? trainInfo.split('cars')[0].split(' ').at(-2) : null
         const singleRow = trainInfo ? trainInfo.split('single row').length > 1 : false
@@ -154,7 +162,7 @@ async function scrapeDetails(link) {
                 numOutsideSeatsPerRow = numSeatsPerRow / 2
             }
         }
-        
+
         return { name, park, uniqueUrl, type, model, manufacturer, length, height, drop, speed, inversions, openingDate, numCars, numRowsPerCar, numInsideSeatsPerRow, numOutsideSeatsPerRow }
     })
 }
@@ -231,6 +239,7 @@ async function run() {
     SqlClient.connect()
 
     if (Args.reset) {
+        console.info('Clearing data.')
         await SqlClient.query('TRUNCATE Coasters')
         await SqlClient.query('TRUNCATE CoasterImages')
     }

@@ -7,6 +7,12 @@ export class CommentEntity {
     @PrimaryGeneratedColumn({ name: 'commentid' })
     commentId: number;
 
+    @Column({ name: 'parentcommentid' })
+    parentCommentId: number;
+
+    @Column({ name: 'userid' })
+    userId: number;
+
     @Column()
     body: string;
 
@@ -18,7 +24,7 @@ export class CommentEntity {
 
     @JoinColumn({ name: 'userid' })
     @ManyToOne(type => UserEntity, c => c.comments, {  })
-    user: UserEntity;
+    author: UserEntity;
 
     @JoinColumn({ name: 'coasterid' })
     @ManyToOne(type => CoasterEntity, c => c.comments, {  })

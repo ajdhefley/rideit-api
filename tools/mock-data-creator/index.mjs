@@ -1,5 +1,5 @@
 /**
- * Inserts fake comments into the DB. The coaster scraper tool should be run first.
+ * Inserts fake reviews/comments into the DB for performance/UI testing.
  * 
  * Flags:
  *   db-name     = Name of DB being connected to
@@ -59,9 +59,9 @@ async function createMockData() {
         const numComments = getRandom(Args.comments - intervalComments, Args.comments + intervalComments)
 
         for (let i = 1; i <= numReviews; i++) {
-            const reviewTitle = lorem.generateWords(getRandom(4, 10))
-            const reviewText = lorem.generateParagraphs(getRandom(1, 3))
             const randomRating = getRandom(1, 5)
+            const reviewTitle = lorem.generateWords(getRandom(4, 10))
+            const reviewText = await generateReviewText(coaster.name)
             const review = await insertReview(coaster.coasterid, coaster.name, 1, reviewTitle, reviewText, randomRating)
             await insertReviewTags(review.reviewid)
         }
@@ -109,6 +109,18 @@ async function insertReviewTags(reviewId) {
         INSERT INTO ReviewTags (ReviewId, Tag)
         VALUES ($4, $1), ($4, $2), ($4, $3)
     `, [randomTag1, randomTag2, randomTag3, reviewId]) 
+}
+
+async function generateReviewText(coasterName) {
+    const text = lorem.generateParagraphs(getRandom(1, 3))
+    const textSplit = text.split(' ')
+    
+    for (let i = 1; i <= getRandom(5, 15); i++) {
+        // Randomly replace words with coaster name for relevance.
+        textSplit[getRandom(0, textSplit.length-1)] = coasterName
+    }
+
+    return textSplit.join(' ')
 }
 
 async function run() {

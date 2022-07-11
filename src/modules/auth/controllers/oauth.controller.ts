@@ -12,7 +12,7 @@ export class OAuthController {
     @UseGuards(GoogleGuard)
     google(@Req() req, @Res() res) {
         if (!req.user) {
-            return 'No user from Google';
+            return res.status(403).end();
         }
 
         const token = this.authService.createAccessToken(req.user);
@@ -28,7 +28,7 @@ export class OAuthController {
     @UseGuards(FacebookGuard)
     facebook(@Req() req, @Res() res) {
         if (!req.user) {
-            return 'No user from Facebook';
+            return res.status(403).end();
         }
 
         const token = this.authService.createAccessToken(req.user);

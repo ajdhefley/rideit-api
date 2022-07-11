@@ -1,7 +1,6 @@
 /**
  * Goes through CoasterImages table and converts image URL into Base64-encoded
  * string, to be used as image preview which loads more quickly in the browser.
- * The coaster scraper tool should be run first.
  *
  * Flags:
  *   db-name     = Name of DB being connected to
@@ -47,7 +46,7 @@ async function encodeAllImages() {
 
 async function saveEncodedImage(coaster, src, base64) {
     console.info(`Updating ${coaster.name}: ${src}\n${base64}\n`)
-    const result = await SqlClient.query('UPDATE CoasterImages SET Base64=$1 WHERE CoasterId=$2 AND ImageUrl=$3', [base64, coaster.CoasterId, src])
+    const result = await SqlClient.query('UPDATE CoasterImages SET Base64=$1 WHERE CoasterId=$2 AND ImageUrl=$3', [base64, coaster.coasterid, src])
     return result.rows
 }
 

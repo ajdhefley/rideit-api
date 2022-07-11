@@ -1,4 +1,5 @@
 import { Args, ArgsType, Field, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { User } from 'src/modules/users/models/user.model';
 import { UserService } from 'src/modules/users/services/user.service';
 import { ReviewTag } from '../models/review-tag.model';
 import { Review } from '../models/review.model';
@@ -29,7 +30,7 @@ export class ReviewResolver {
         return this.reviewTagService.findBy(parent.reviewId);
     }
 
-    @ResolveField(resolves => [ReviewTag])
+    @ResolveField(resolves => [User])
     async author(@Parent() parent: Review) {
         return this.userService.findOneByUserId(parent.userId);
     }

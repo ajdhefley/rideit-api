@@ -24,16 +24,16 @@ export class Coaster {
     @Field(type => String, { nullable: true })
     manufacturer: string;
 
-    @Field(type => Int, { nullable: true })
+    @Field(type => Number, { nullable: true })
     heightInFt: number;
 
-    @Field(type => Int, { nullable: true })
+    @Field(type => Number, { nullable: true })
     dropInFt: number;
 
-    @Field(type => Int, { nullable: true })
+    @Field(type => Number, { nullable: true })
     lengthInFt: number;
 
-    @Field(type => Int, { nullable: true })
+    @Field(type => Number, { nullable: true })
     speedInMph: number;
 
     @Field(type => Int, { nullable: true })

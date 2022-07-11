@@ -13,7 +13,7 @@ export class UserEntity {
     @Column()
     password: string;
 
-    @OneToMany(type => CommentEntity, r => r.user)
+    @OneToMany(type => CommentEntity, r => r.author)
     comments: CommentEntity[];
 
     @OneToMany(type => ReviewEntity, r => r.author)
