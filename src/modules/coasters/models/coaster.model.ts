@@ -64,7 +64,6 @@ export class Coaster {
     images: CoasterImage[];
 
     // TODO
-    userRating: number;
     ratingAverage: number;
     ratingCount: number;
     rank: number;

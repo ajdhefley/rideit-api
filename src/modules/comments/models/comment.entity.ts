@@ -1,5 +1,5 @@
-import { CoasterEntity } from 'src/modules/coasters/models/coaster.entity';
-import { UserEntity } from 'src/modules/users/models/user.entity';
+import { CoasterEntity } from '../../coasters/models/coaster.entity';
+import { UserEntity } from '../../users/models/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('comments')

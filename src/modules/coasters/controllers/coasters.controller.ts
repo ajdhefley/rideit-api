@@ -1,11 +1,16 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { JwtGuard } from 'src/modules/auth/guards/jwt.guard';
+import { JwtGuard } from '../../auth/guards/jwt.guard';
 import { CoasterService } from '../services/coaster.service';
 
 @Controller('coasters')
 export class CoastersController {
     constructor(private readonly coasterService: CoasterService) { }
+
+    @Get('test')
+    async getCoasterByUrl(@Req() req: Request, @Res() res: Response) {
+      res.status(200).end();
+    }
 
     // @Get()
     // async getCoasters(@Req() req: Request, @Res() res: Response, @Query() query) {

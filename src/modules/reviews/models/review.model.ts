@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Coaster } from 'src/modules/coasters/models/coaster.model';
-import { User } from 'src/modules/users/models/user.model';
+import { Coaster } from '../../coasters/models/coaster.model';
+import { User } from '../../users/models/user.model';
 
 @ObjectType()
 export class Review {

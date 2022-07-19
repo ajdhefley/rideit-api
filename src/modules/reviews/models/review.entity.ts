@@ -1,5 +1,5 @@
-import { UserEntity } from 'src/modules/users/models/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserEntity } from '../../users/models/user.entity';
 import { CoasterEntity } from '../../coasters/models/coaster.entity';
 
 @Entity('reviews')

@@ -3,6 +3,7 @@ import { CoasterService } from '../services/coaster.service';
 import { Coaster } from '../models/coaster.model';
 import { CoasterImage } from '../models/coaster-image.model';
 import { CoasterImageService } from '../services/coaster-image.service';
+import { UserService } from '../../users/services/user.service';
 
 @ArgsType()
 class CoasterArgs {
@@ -20,7 +21,7 @@ class CoasterFilterArgs {
 export class CoasterResolver {
     constructor(
         private coasterService: CoasterService,
-        private coasterImageService: CoasterImageService
+        private userService: UserService
     ) { }
 
     @Query(returns => [Coaster])

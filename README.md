@@ -1,4 +1,6 @@
-Core backend [Node.js, NestJS (Express), GraphQL, TypeORM, PostgreSQL] for a roller coaster ranking platform.
+Core backend [Node.js, NestJS (Express), GraphQL, TypeORM, PostgreSQL] for a roller coaster enthusiast platform.
+
+Processes authentication (including Google & Facebook OAuth), and fetching for coasters/reviews/comments. Also contains tools to populate raw coaster data, and mock data for performance/UI testing.
 
 # Getting started
 
@@ -19,39 +21,29 @@ Install the dependencies:
 Build the application:
     
     npm run build
-    
+
 ----------
 
 ## NPM scripts
 
-- `npm start` - Start application
-- `npm run start:dev` - Start application with watcher
-- `npm run build` - Build application
-- `npm run test` - Run tests
-- `npm run test:e2e` - Run end-to-end (live) tests
-- `npm run lint` - Run linter
-
-- `npm run tools:scraper` - Run tool to scrape coaster data/images and save to DB
-- `npm run tools:encoder` - Run tool to generate Base64 encoded strings for each image
-
-----------
-
-## Environment variables
-
-- `DB_NAME` - Name of database
-- `DB_HOST` - DB server host (does not include port)
-- `DB_USER` - DB server username
-- `DB_PASSWORD` - DB server password
-- `PORT` - Port on which API is hosted
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_SECRET`
-- `FACEBOOK_APP_ID`
-- `FACEBOOK_APP_SECRET`
+| Name | Description |
+| :--- | :--- |
+| `npm start` | Starts application |
+| `npm run start:dev` | Starts application with watcher (automatically rebuilds changed files) |
+| `npm run build` | Builds application |
+| `npm run test` | Runs unit tests |
+| `npm run test:e2e` | Run end-to-end tests |
+| `npm run lint` | Runs linter (static code analysis) |
+| `npm run tools:scraper` | Runs Coaster Scraper tool |
+| `npm run tools:encoder` | Runs Image Encoder tool |
+| `npm run tools:mock` | Runs Mock Data Creator tool |
 
 ----------
 
-## Start application
+## Tools
 
-- `npm start`
-- `npm run start:dev` will automatically rebuild when files are changed
-      
+| Name | Description |
+| :--- | :--- |
+| Coaster Scraper | Executes search on rcdb.com, and scans and stores data/images for thousands of coasters |
+| Image Encoder | Iterates through all images for all coasters and stores Base64 encodings, to be used as blurred placeholder images |
+| Mock Data Creator | Generates and stores fake comments and reviews for all coasters |

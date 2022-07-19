@@ -16,6 +16,7 @@ import { CommentEntity } from './comments/models/comment.entity';
 import { ReviewTagEntity } from './reviews/models/review-tag.entity';
 import { ReviewEntity } from './reviews/models/review.entity';
 import { ReviewsModule } from './reviews/reviews.module';
+import { OAuthUserEntity } from './users/models/oauth-user.entity';
 import { UserEntity } from './users/models/user.entity';
 import { UsersModule } from './users/users.module';
 
@@ -52,7 +53,8 @@ import { UsersModule } from './users/users.module';
                 CommentEntity,
                 ReviewEntity,
                 ReviewTagEntity,
-                UserEntity
+                UserEntity,
+                OAuthUserEntity
             ]
         })
     ],

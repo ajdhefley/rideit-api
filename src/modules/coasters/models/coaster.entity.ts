@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { ReviewEntity } from 'src/modules/reviews/models/review.entity';
+import { ReviewEntity } from '../../reviews/models/review.entity';
+import { CommentEntity } from '../../comments/models/comment.entity';
 import { CoasterImageEntity } from './coaster-image.entity';
-import { CommentEntity } from 'src/modules/comments/models/comment.entity';
 
 @Entity('coasters')
 export class CoasterEntity {

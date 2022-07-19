@@ -21,4 +21,8 @@ export class UserService {
             where: { userId }
         });
     }
+
+    insert(user: UserEntity) {
+        return this.userRepository.insert(user);
+    }
 }

@@ -8,12 +8,12 @@ import { UnauthorizedException } from '../../../infrastructure/exceptions/unauth
 @Injectable()
 export class AuthService {
     constructor(
-        private usersService: UserService,
+        private userService: UserService,
         private jwtService: JwtService
     ) { }
 
     async loginUser(username: string, password: string) {
-        const user = await this.usersService.findOneByUsername(username);
+        const user = await this.userService.findOneByUsername(username);
 
         if (!user) {
             throw new UnauthorizedException();
@@ -25,12 +25,12 @@ export class AuthService {
             const { password: Password, ...Passwordless } = user;
 
             return {
-                access_token: this.createAccessToken(Passwordless)
+                access_token: this.generateJwt(Passwordless)
             };
         }
     }
 
-    async createAccessToken(user: any) {
-        return this.jwtService.sign(user);
+    async generateJwt(user: any) {
+        return this.jwtService.sign({ ...user });
     }
 }
