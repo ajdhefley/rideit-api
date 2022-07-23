@@ -2,27 +2,27 @@
 import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../../../modules/users/services/user.service';
 import { UnauthorizedException } from '../../../infrastructure/exceptions/unauthorized.exception';
+import { User } from 'src/modules/users/models/user.model';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private userService: UserService,
         private jwtService: JwtService
     ) { }
 
     async loginUser(username: string, password: string) {
-        const user = await this.userService.findOneByUsername(username);
+        const userResponse = await axios.get<User>(`${process.env.SERVICE_USER_URI}/user/username}`);
 
-        if (!user) {
+        if (!userResponse.data) {
             throw new UnauthorizedException();
         }
 
-        const match = await bcrypt.compare(password, user.password);
+        const match = await bcrypt.compare(password, userResponse.data.password);
 
         if (match) {
-            const { password: Password, ...Passwordless } = user;
+            const { password: Password, ...Passwordless } = userResponse.data;
 
             return {
                 access_token: this.generateJwt(Passwordless)

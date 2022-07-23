@@ -62,11 +62,4 @@ export class Coaster {
 
     @Field(type => [CoasterImage], { nullable: true })
     images: CoasterImage[];
-
-    // TODO
-    ratingAverage: number;
-    ratingCount: number;
-    rank: number;
-    goldenTicketAwards: string;
-    angleInDegrees: number;
 }

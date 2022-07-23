@@ -3,21 +3,13 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { HttpExceptionFilter } from '../infrastructure/exceptions/http-exception.filter';
 import { RequestLoggerMiddleware } from '../infrastructure/logging/request-logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { CoastersModule } from './coasters/coasters.module';
-import { CoasterImageEntity } from './coasters/models/coaster-image.entity';
-import { CoasterEntity } from './coasters/models/coaster.entity';
 import { CommentsModule } from './comments/comments.module';
-import { CommentEntity } from './comments/models/comment.entity';
-import { ReviewTagEntity } from './reviews/models/review-tag.entity';
-import { ReviewEntity } from './reviews/models/review.entity';
 import { ReviewsModule } from './reviews/reviews.module';
-import { OAuthUserEntity } from './users/models/oauth-user.entity';
-import { UserEntity } from './users/models/user.entity';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -38,24 +30,6 @@ import { UsersModule } from './users/users.module';
             driver: ApolloDriver,
             autoSchemaFile: join('schema.gql'),
             persistedQueries: false
-        }),
-
-        TypeOrmModule.forRoot({
-            type: 'postgres',
-            host: process.env.DB_HOST,
-            username: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_NAME,
-            synchronize: false,
-            entities: [
-                CoasterEntity,
-                CoasterImageEntity,
-                CommentEntity,
-                ReviewEntity,
-                ReviewTagEntity,
-                UserEntity,
-                OAuthUserEntity
-            ]
         })
     ],
     controllers: [],

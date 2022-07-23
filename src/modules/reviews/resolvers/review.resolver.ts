@@ -1,10 +1,8 @@
 import { Args, ArgsType, Field, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { User } from '../../users/models/user.model';
-import { UserService } from '../../users/services/user.service';
 import { ReviewTag } from '../models/review-tag.model';
 import { Review } from '../models/review.model';
-import { ReviewTagService } from './review-tag.service';
-import { ReviewService } from './review.service';
+import { HttpService } from 'src/services/http.service';
 
 @ArgsType()
 class ReviewArgs {
@@ -14,24 +12,20 @@ class ReviewArgs {
 
 @Resolver(of => Review)
 export class ReviewResolver {
-    constructor(
-        private reviewService: ReviewService,
-        private reviewTagService: ReviewTagService,
-        private userService: UserService
-    ) { }
+    constructor(private http: HttpService) { }
 
     @Query(returns => [Review])
     async reviews(@Args() args: ReviewArgs) {
-        return this.reviewService.findBy(args.coasterUrl);
+        return this.http.get(`${process.env.SERVICE_USER_URI}/reviews/${args.coasterUrl}`);
     }
 
     @ResolveField(resolves => [ReviewTag])
     async reviewTags(@Parent() parent: Review) {
-        return this.reviewTagService.findBy(parent.reviewId);
+        return this.http.get(`${process.env.SERVICE_USER_URI}/review-tags/${parent.reviewId}`);
     }
 
     @ResolveField(resolves => [User])
     async author(@Parent() parent: Review) {
-        return this.userService.findOneByUserId(parent.userId);
+        return this.http.get(`${process.env.SERVICE_USER_URI}/user/${parent.userId}`);
     }
 }

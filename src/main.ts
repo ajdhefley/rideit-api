@@ -12,7 +12,7 @@ import { AppModule } from './modules/app.module';
     await app.use(cookieParser());
     await app.enableCors({
         credentials: true,
-        origin: process.env.CLIENT_URL
+        origin: process.env.CLIENT_URI
     });
     // TODO: use reverse proxy for same port and no cross-origin
 

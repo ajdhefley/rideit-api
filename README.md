@@ -1,6 +1,6 @@
-Core backend [Node.js, NestJS (Express), GraphQL, TypeORM, PostgreSQL] for a roller coaster enthusiast platform.
+API gateway [Node.js, NestJS (Express), GraphQL] for a roller coaster enthusiast platform.
 
-Processes authentication (including Google & Facebook OAuth), and fetching for coasters/reviews/comments. Also contains tools to populate raw coaster data, and mock data for performance/UI testing.
+Handles authentication (including Google & Facebook OAuth) and positions GraphQL between client and microservices. Also contains tools to populate raw coaster data, and mock data for performance/UI testing.
 
 # Getting started
 

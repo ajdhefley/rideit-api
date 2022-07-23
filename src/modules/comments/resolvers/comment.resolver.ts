@@ -1,8 +1,7 @@
 import { Args, ArgsType, Field, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { User } from '../../users/models/user.model';
-import { UserService } from '../../users/services/user.service';
 import { Comment } from '../models/comment.model';
-import { CommentService } from './comment.service';
+import { HttpService } from 'src/services/http.service';
 
 @ArgsType()
 class CommentArgs {
@@ -12,18 +11,15 @@ class CommentArgs {
 
 @Resolver(of => Comment)
 export class CommentResolver {
-    constructor(
-        private commentService: CommentService,
-        private userService: UserService
-    ) { }
+    constructor(private http: HttpService) { }
 
     @Query(returns => [Comment])
     async comments(@Args() args: CommentArgs) {
-        return this.commentService.findBy(args.coasterUrl);
+        return this.http.get(`${process.env.SERVICE_COMMENT_URI}/comments/${args.coasterUrl}`);
     }
 
     @ResolveField(resolves => [User])
     async author(@Parent() parent: Comment) {
-        return this.userService.findOneByUserId(parent.userId);
+        return this.http.get(`${process.env.SERVICE_USER_URI}/user/${parent.userId}`);
     }
 }

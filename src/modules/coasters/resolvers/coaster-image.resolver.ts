@@ -1,6 +1,6 @@
 import { Args, ArgsType, Field, Query, Resolver } from '@nestjs/graphql';
 import { CoasterImage } from '../models/coaster-image.model';
-import { CoasterImageService } from './coaster-image.service';
+import { HttpService } from 'src/services/http.service';
 
 @ArgsType()
 class CoasterImageArgs {
@@ -10,10 +10,10 @@ class CoasterImageArgs {
 
 @Resolver(of => CoasterImage)
 export class CoasterImageResolver {
-    constructor(private coasterImageService: CoasterImageService) { }
+    constructor(private http: HttpService) { }
 
     @Query(returns => [CoasterImage])
-    async coasterImages(@Args() args: CoasterImageArgs) {
-        return this.coasterImageService.findBy(args.coasterUrl);
+    async coasterImages(@Args() args: CoasterImageArgs) { 
+        return this.http.get(`${process.env.SERVICE_COASTER_URI}/coaster/images/${args.coasterUrl}`);
     }
 }

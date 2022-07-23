@@ -2,19 +2,16 @@ import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { GoogleGuard } from '../guards/google.guard';
 import { FacebookGuard } from '../guards/facebook.guard';
-import { OAuthUserService } from '../../users/services/oauth-user.service';
-import { UserService } from '../../users/services/user.service';
-import { UserEntity } from '../../users/models/user.entity';
-import { OAuthUserEntity } from '../../users/models/oauth-user.entity';
 import { OAuthProviders } from '../oauth-providers';
 import AuthCookie from '../auth.cookie';
+import { HttpService } from 'src/services/http.service';
+import { OAuthUser } from 'src/modules/users/models/oauth-user.model';
 
 @Controller('oauth')
 export class OAuthController {
     constructor(
-        private readonly authService: AuthService,
-        private readonly userService: UserService,
-        private readonly oauthUserService: OAuthUserService
+        private readonly http: HttpService,
+        private readonly authService: AuthService
     ) { }
 
     @Post('google')
@@ -28,23 +25,24 @@ export class OAuthController {
     @Post('google/token')
     @UseGuards(GoogleGuard)
     async redirect(@Req() req, @Res() res) {
-        let oauthUser = await this.oauthUserService.findOne(OAuthProviders.Google, req.user.id);
+        let oauthUser = await this.http.get<OAuthUser>(`${process.env.SERVICE_USER_URI}/oauth-user/${OAuthProviders.Google}/${req.user.id}`);
 
         if (!oauthUser) {
-            const userInsertResult = await this.userService.insert(<UserEntity>{
-                username: req.user.email,  
-            });
-            
-            const oauthUserInsertResult = await this.oauthUserService.insert(<OAuthUserEntity> {
-                oauthServiceId: OAuthProviders.Google,
-                userId: userInsertResult.raw[0].userid,
-                oauthIdentifier: req.user.id
+            const userInsertResult = await this.http.post(`${process.env.SERVICE_USER_URI}/user`, {
+                username: req.user.email
             });
 
-            oauthUser = oauthUserInsertResult.raw[0];
+            const oauthUserInsertResult = await this.http.post(`${process.env.SERVICE_USER_URI}/oauth-user`, {
+                userId: userInsertResult.userid,
+                oauthIdentifier: req.user.id,
+                oauthServiceId: OAuthProviders.Google
+            });
+
+            oauthUser = oauthUserInsertResult;
         }
 
-        const token = await this.authService.generateJwt(oauthUser.userId);
+        const { password: Password, ...Passwordless } = await this.http.get(`${process.env.SERVICE_USER_URI}/user/${oauthUser.userId}`);
+        const token = await this.authService.generateJwt(Passwordless);
 
         res.header('Access-Control-Allow-Credentials', 'true');
         res.cookie(AuthCookie.name, token, AuthCookie.options);
