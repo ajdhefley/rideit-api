@@ -59,7 +59,4 @@ export class Coaster {
 
     @Field(type => Int, { nullable: true })
     outsideSeatsPerRow: number;
-
-    @Field(type => [CoasterImage], { nullable: true })
-    images: CoasterImage[];
 }

@@ -1,5 +1,6 @@
-import { Args, ArgsType, Field, Query, Resolver } from '@nestjs/graphql';
+import { Args, ArgsType, Field, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Coaster } from '../models/coaster.model';
+import { CoasterImage } from '../models/coaster-image.model';
 import { HttpService } from '../../../services/http.service';
 
 @ArgsType()
@@ -11,7 +12,7 @@ class CoasterArgs {
 @ArgsType()
 class CoasterFilterArgs {
     @Field(type => String, { nullable: false })
-    name?: string;
+    filter?: string;
 }
 
 @Resolver(of => Coaster)
@@ -29,7 +30,12 @@ export class CoasterResolver {
     }
 
     @Query(returns => [Coaster])
-    async coasterFilter(@Args() args: CoasterFilterArgs) {
-        return this.http.get(`${process.env.SERVICE_COASTER_URI}/coasters/search/${args.name}`);
+    async filteredCoaster(@Args() args: CoasterFilterArgs) {
+        return this.http.get(`${process.env.SERVICE_COASTER_URI}/coasters/search/${args.filter}`);
+    }
+
+    @ResolveField(resolves => [CoasterImage])
+    async images(@Parent() parent: Coaster) {
+        return this.http.get(`${process.env.SERVICE_COASTER_URI}/coaster/${parent.url}/images`);
     }
 }

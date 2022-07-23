@@ -4,8 +4,9 @@ import { GoogleGuard } from '../guards/google.guard';
 import { FacebookGuard } from '../guards/facebook.guard';
 import { OAuthProviders } from '../oauth-providers';
 import AuthCookie from '../auth.cookie';
-import { HttpService } from '../../../services/http.service';
 import { OAuthUser } from 'src/modules/users/models/oauth-user.model';
+import { User } from 'src/modules/users/models/user.model';
+import { HttpService } from '../../../services/http.service';
 
 @Controller('oauth')
 export class OAuthController {
@@ -33,7 +34,7 @@ export class OAuthController {
             });
 
             const oauthUserInsertResult = await this.http.post(`${process.env.SERVICE_USER_URI}/oauth-user`, {
-                userId: userInsertResult.userid,
+                userId: userInsertResult.userId,
                 oauthIdentifier: req.user.id,
                 oauthServiceId: OAuthProviders.Google
             });
@@ -41,7 +42,7 @@ export class OAuthController {
             oauthUser = oauthUserInsertResult;
         }
 
-        const { password: Password, ...Passwordless } = await this.http.get(`${process.env.SERVICE_USER_URI}/user/${oauthUser.userId}`);
+        const { password: Password, ...Passwordless } = await this.http.get<User>(`${process.env.SERVICE_USER_URI}/user/${oauthUser.userId}`);
         const token = await this.authService.generateJwt(Passwordless);
 
         res.header('Access-Control-Allow-Credentials', 'true');

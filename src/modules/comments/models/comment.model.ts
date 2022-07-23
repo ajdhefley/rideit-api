@@ -17,7 +17,7 @@ export class Comment {
     body: string;
 
     @Field()
-    timestamp: Date;
+    timestamp: string;
 
     @Field()
     likeCount: number;

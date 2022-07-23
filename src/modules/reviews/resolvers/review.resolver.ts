@@ -16,16 +16,19 @@ export class ReviewResolver {
 
     @Query(returns => [Review])
     async reviews(@Args() args: ReviewArgs) {
-        return this.http.get(`${process.env.SERVICE_USER_URI}/reviews/${args.coasterUrl}`);
+        return this.http.get(`${process.env.SERVICE_REVIEW_URI}/reviews/${args.coasterUrl}`)
+        .catch(console.error)
     }
 
     @ResolveField(resolves => [ReviewTag])
     async reviewTags(@Parent() parent: Review) {
-        return this.http.get(`${process.env.SERVICE_USER_URI}/review-tags/${parent.reviewId}`);
+        return this.http.get(`${process.env.SERVICE_REVIEW_URI}/review/${parent.reviewId}/tags`);
     }
 
-    @ResolveField(resolves => [User])
+    @ResolveField(resolves => User)
     async author(@Parent() parent: Review) {
+        console.log(parent);
+        console.log(`${process.env.SERVICE_USER_URI}/user/${parent.userId}`);
         return this.http.get(`${process.env.SERVICE_USER_URI}/user/${parent.userId}`);
     }
 }

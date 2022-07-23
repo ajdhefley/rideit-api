@@ -18,7 +18,7 @@ export class CommentResolver {
         return this.http.get(`${process.env.SERVICE_COMMENT_URI}/comments/${args.coasterUrl}`);
     }
 
-    @ResolveField(resolves => [User])
+    @ResolveField(resolves => User)
     async author(@Parent() parent: Comment) {
         return this.http.get(`${process.env.SERVICE_USER_URI}/user/${parent.userId}`);
     }
