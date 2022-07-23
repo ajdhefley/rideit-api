@@ -1,6 +1,6 @@
 import { Args, ArgsType, Field, Query, Resolver } from '@nestjs/graphql';
 import { Coaster } from '../models/coaster.model';
-import { HttpService } from 'src/services/http.service';
+import { HttpService } from '../../../services/http.service';
 
 @ArgsType()
 class CoasterArgs {

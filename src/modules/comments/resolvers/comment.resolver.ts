@@ -1,7 +1,7 @@
 import { Args, ArgsType, Field, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { User } from '../../users/models/user.model';
 import { Comment } from '../models/comment.model';
-import { HttpService } from 'src/services/http.service';
+import { HttpService } from '../../../services/http.service';
 
 @ArgsType()
 class CommentArgs {

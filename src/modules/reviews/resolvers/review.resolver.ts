@@ -2,7 +2,7 @@ import { Args, ArgsType, Field, Parent, Query, ResolveField, Resolver } from '@n
 import { User } from '../../users/models/user.model';
 import { ReviewTag } from '../models/review-tag.model';
 import { Review } from '../models/review.model';
-import { HttpService } from 'src/services/http.service';
+import { HttpService } from '../../../services/http.service';
 
 @ArgsType()
 class ReviewArgs {

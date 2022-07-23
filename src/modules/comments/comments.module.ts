@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { HttpService } from 'src/services/http.service';
+import { HttpService } from '../../services/http.service';
 import { UsersModule } from '../users/users.module';
 import { CommentResolver } from './resolvers/comment.resolver';
 
