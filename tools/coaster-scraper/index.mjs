@@ -9,14 +9,15 @@
  *   db-host     = DB host
  *   db-user     = DB user
  *   db-password = DB password
- *   page        = Which page to start on (say if previous run stopped prematurely and need to start tool later in the process)
+ *   chrome-path = Path to chrome executable
+ *   pages       = Which pages to store (all others are ignored)
  *   reset       = If present, clear the database first, otherwise add tool results to existing data
  *  
  *
  * Examples:
  *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase
- *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase --page=10
- *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase --page=15 --reset
+ *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase --pages=10
+ *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase --pages=11,14 --reset
  **/
 
 import postgres from 'pg'
@@ -27,6 +28,12 @@ import minimist from 'minimist'
  * Allows accessing arguments/flags by name instead of array index.
  **/
 const Args = minimist(process.argv.slice(2))
+
+/**
+ * Parsed list of comma-separated page numbers.
+ * If there are any, all other pages will be skipped.
+ **/
+const Pages = Args.pages?.split(',')
 
 /**
  * Executes search with the following filters:
@@ -64,10 +71,13 @@ async function scrapeSearchResults() {
     })
 
     for (let i = 1; i <= totalPages; i++) {
-        if (Args.page && i < Args.page)
+        if (Pages && !Pages.includes(i.toString()))
             continue
             
-        await Driver.goto(`${BaseUrl}&page=${i}`)
+        await Promise.all([
+            Driver.goto(`${BaseUrl}&page=${i}`),
+            Driver.waitForNavigation()
+        ])
 
         const pageUrlList = await Driver.evaluate(() => {
             const links = document.querySelectorAll('.stdtbl tbody tr td:nth-child(2) a')
@@ -175,7 +185,10 @@ async function scrapeImages(link) {
     const urlList = []
 
     for (let i = 1; i <= picLinks.length; i++) {
-        await Driver.click(`.pic-strip a:nth-child(${i})`)
+        await Promise.all([
+            Driver.click(`.pic-strip a:nth-child(${i})`),
+            Driver.waitForNavigation()
+        ])
 
         const url = await Driver.evaluate(() => {
             const bg = window.getComputedStyle(document.body)['background-image']
@@ -185,7 +198,10 @@ async function scrapeImages(link) {
         })
         urlList.push(url)
 
-        await Driver.goto(link)
+        await Promise.all([
+            Driver.goto(link),
+            Driver.waitForNavigation()
+        ])
     }
 
     return urlList
@@ -244,7 +260,16 @@ async function run() {
         await SqlClient.query('TRUNCATE CoasterImages')
     }
 
-    Browser = await puppeteer.launch({ headless: false })
+    Browser = await puppeteer.launch({
+        headless: true,
+        executablePath: Args['chrome-path'],
+        args: [
+            "--disable-gpu",
+            "--disable-dev-shm-usage",
+            "--disable-setuid-sandbox",
+            "--no-sandbox"
+        ]
+    })
     Driver = await Browser.newPage()
 
     await scrapeSearchResults(Driver)

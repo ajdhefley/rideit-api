@@ -49,7 +49,7 @@ const lorem = new LoremIpsum({
     }
 })
 
-async function createMockData() {
+async function createMockData(userIdList) {
     const coasters = await getCoasters()
 
     return promiseMap(coasters, async (coaster) => {
@@ -60,9 +60,10 @@ async function createMockData() {
 
         for (let i = 1; i <= numReviews; i++) {
             const randomRating = getRandom(1, 5)
+            const randomUserIdIndex = getRandom(0, userIdList.length-1)
             const reviewTitle = lorem.generateWords(getRandom(4, 10))
             const reviewText = await generateReviewText(coaster.name)
-            const review = await insertReview(coaster.coasterid, coaster.name, 1, reviewTitle, reviewText, randomRating)
+            const review = await insertReview(coaster.coasterid, coaster.name, userIdList[randomUserIdIndex], reviewTitle, reviewText, randomRating)
             await insertReviewTags(review.reviewid)
         }
 
@@ -128,12 +129,20 @@ async function run() {
 
     if (Args.reset) {
         console.info('Clearing data.')
+        await SqlClient.query('TRUNCATE Users')
         await SqlClient.query('TRUNCATE Reviews')
         await SqlClient.query('TRUNCATE ReviewTags')
         await SqlClient.query('TRUNCATE Comments')
     }
+    
+    const userIdList = []
+    const numUsers = 5;
+    for (let i = 0; i < numUsers; i++) {
+        const inserUserResult = await SqlClient.query('INSERT INTO users (Username, Password) VALUES ($1, $2) RETURNING *', [`user_${i}`, ''])
+        userIdList.push(inserUserResult.rows[0].userid)
+    }
 
-    await createMockData()
+    await createMockData(userIdList)
 }
 
 async function dispose() {

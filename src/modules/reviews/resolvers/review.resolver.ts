@@ -16,8 +16,7 @@ export class ReviewResolver {
 
     @Query(returns => [Review])
     async reviews(@Args() args: ReviewArgs) {
-        return this.http.get(`${process.env.SERVICE_REVIEW_URI}/reviews/${args.coasterUrl}`)
-        .catch(console.error)
+        return this.http.get(`${process.env.SERVICE_REVIEW_URI}/reviews/${args.coasterUrl}`);
     }
 
     @ResolveField(resolves => [ReviewTag])
@@ -27,8 +26,6 @@ export class ReviewResolver {
 
     @ResolveField(resolves => User)
     async author(@Parent() parent: Review) {
-        console.log(parent);
-        console.log(`${process.env.SERVICE_USER_URI}/user/${parent.userId}`);
         return this.http.get(`${process.env.SERVICE_USER_URI}/user/${parent.userId}`);
     }
 }
