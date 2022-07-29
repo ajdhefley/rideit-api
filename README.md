@@ -2,6 +2,8 @@ API gateway [Node.js, NestJS (Express), GraphQL] for a roller coaster enthusiast
 
 Handles authentication (including Google & Facebook OAuth) and positions GraphQL between client and microservices. Also contains tools to populate raw coaster data, and mock data for performance/UI testing.
 
+To run RideIt locally, see [here](https://github.com/ajdhefley/rideit).
+
 # Getting started
 
 ## Installation
