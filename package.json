@@ -47,7 +47,7 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@ajdhefley/test-suite-nest": "git+https://github.com/ajdhefley/test-suite-nest.git",
+    "@ajdhefley/slim-suite-nest": "git+https://github.com/ajdhefley/slim-suite-nest.git",
     "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
