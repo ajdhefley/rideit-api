@@ -17,7 +17,7 @@
 import postgres from 'pg'
 import minimist from 'minimist'
 import { LoremIpsum } from 'lorem-ipsum'
-import { getRandom, promiseMap } from '../toolUtils.mjs'
+import { getRandom } from '../toolUtils.mjs'
 
 /**
  * Allows accessing arguments/flags by name instead of array index.
@@ -27,13 +27,17 @@ const Args = minimist(process.argv.slice(2))
 /**
  * Tool uses a single open connection.
  **/
- const { Client } = postgres
- const SqlClient = new Client({
-     host     : Args['db-host'],
-     database : Args['db-name'],
-     user     : Args['db-user'],
-     password : Args['db-password']
- })
+const { Client } = postgres
+const SqlClient = new Client({
+    host     : Args['db-host'],
+    database : Args['db-name'],
+    user     : Args['db-user'],
+    password : Args['db-password'],
+    ssl: {
+        rejectUnauthorized: false,
+        
+    }
+})
 
 /**
  * Random text generator.
@@ -52,7 +56,7 @@ const lorem = new LoremIpsum({
 async function createMockData(userIdList) {
     const coasters = await getCoasters()
 
-    return promiseMap(coasters, async (coaster) => {
+    for (let coaster of coasters) {
         const intervalReviews = Args.reviews * 0.20
         const intervalComments = Args.comments * 0.20
         const numReviews = getRandom(Args.reviews - intervalReviews, Args.reviews + intervalReviews)
@@ -69,9 +73,10 @@ async function createMockData(userIdList) {
 
         for (let i = 1; i <= numComments; i++) {
             const commentText = lorem.generateParagraphs(getRandom(1, 3))
-            await insertComment(coaster.coasterid, coaster.name, 1, commentText)
+            const randomUserIdIndex = getRandom(0, userIdList.length-1)
+            await insertComment(coaster.coasterid, coaster.name, userIdList[randomUserIdIndex], commentText)
         }
-    })
+    }
 }
 
 async function getCoasters() {

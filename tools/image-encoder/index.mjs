@@ -15,7 +15,6 @@
 import postgres from 'pg'
 import plaiceholder from 'plaiceholder'
 import minimist from 'minimist'
-import { promiseMap } from '../toolUtils.mjs'
 
 /**
  * Allows accessing arguments/flags by name instead of array index.
@@ -35,13 +34,15 @@ const SqlClient = new Client({
 
 async function encodeAllImages() {
     const coasters = await getCoasters()
-    return promiseMap(coasters, async (coaster) => {
+
+    for (let coaster of coasters) {
         const images = await getImagesByCoasterId(coaster.coasterid)
-        return promiseMap(images, async (image) => {
+
+        for (let image of images) {
             const result = await plaiceholder.getPlaiceholder(image.imageurl)
             await saveEncodedImage(coaster, image.imageurl, result.base64)
-        })
-    })
+        }
+    }
 }
 
 async function saveEncodedImage(coaster, src, base64) {
