@@ -10,6 +10,9 @@ export class Coaster {
     name: string;
 
     @Field(type => String, { nullable: true })
+    location: string;
+
+    @Field(type => String, { nullable: true })
     park: string;
 
     @Field(type => String, { nullable: true })
