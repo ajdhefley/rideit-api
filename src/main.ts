@@ -10,11 +10,6 @@ import { AppModule } from './modules/app.module';
     });
 
     await app.use(cookieParser());
-    await app.enableCors({
-        credentials: true,
-        origin: process.env.CLIENT_URI
-    });
-    // TODO: use reverse proxy for same port and no cross-origin
 
     app.listen(process.env.PORT || 4040, process.env.HOST, () => {
         Logger.log(`Server running on PORT ${process.env.PORT || 4040}`);
