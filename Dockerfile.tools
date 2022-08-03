@@ -27,5 +27,5 @@ RUN npm install --prefix tools/mock-data-creator
 COPY . .
 COPY entrypoint.tools.sh .
 
-# Start the server using the production build
+# Run the tools
 CMD ["/bin/sh", "entrypoint.tools.sh"]
