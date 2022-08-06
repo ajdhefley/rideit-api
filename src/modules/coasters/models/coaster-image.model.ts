@@ -13,4 +13,10 @@ export class CoasterImage {
 
     @Field({ nullable: true })
     base64: string;
+
+    @Field()
+    width: number;
+
+    @Field()
+    height: number;
 }
