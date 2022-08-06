@@ -86,16 +86,15 @@ async function scrapeSearchResults() {
         })
 
         for (let url of pageUrlList) {
+            await Driver.goto(url)
             const details = await scrapeDetails(url)
-            const imageUrlList = await scrapeImages(url)
-            await saveToDb(details, imageUrlList)
+            const imageList = await scrapeImages(url)
+            await saveToDb(details, imageList)
         }
     }
 }
 
 async function scrapeDetails(link) {
-    await Driver.goto(link)
-
     return await Driver.evaluate(() => {
         function getElementsByXPath(xpath, document, parent) {
             let results = []
@@ -113,18 +112,6 @@ async function scrapeDetails(link) {
         const parkElem = document.querySelector('#feature > div:nth-child(1) > a:nth-child(2)')
         const park = parkElem?.innerText
 
-        const uniqueUrl = `${name}@${park}`
-            .toLowerCase()
-            .replace(/\./g, '')
-            .replace(/\,/g, '')
-            .replace(/\&/g, '')
-            .replace(/'/g, '')
-            .replace(/-/g, '')
-            .replace(/   /g, ' ')
-            .replace(/  /g, ' ')
-            .replace(/ /g, '-')
-            .replace(/@/g, '-')
-
         const typeElem = document.querySelector('#feature > ul:nth-child(3) > li:nth-child(2) > a')
         const type = typeElem?.innerText
 
@@ -132,7 +119,7 @@ async function scrapeDetails(link) {
         const model = modelElem?.innerText || null
 
         const manufacturerElem = document.querySelector('#feature > div.scroll > p > a:nth-child(1)')
-        const manufacturer = manufacturerElem?.innerText
+        const manufacturer = manufacturerElem?.innerText ?? 'N/A'
 
         const lengthElem = getElementsByXPath('//th[contains(text(), "Length")]/following-sibling::td[1]/span', document, document)
         const length = lengthElem[0] ? lengthElem[0].innerText.replace(/,/g, '') : null
@@ -154,9 +141,9 @@ async function scrapeDetails(link) {
 
         const trainInfoElem = getElementsByXPath('//*[contains(text(), "Riders are arranged")]', document, document)[0]
         const trainInfo = trainInfoElem?.innerText
-        const numCars = trainInfo ? trainInfo.split('cars')[0].split(' ').at(-2) : null
+        const numCars = trainInfo?.includes('Single car trains.') || trainInfo?.includes('Riders are arranged inline in a single row') ? 1 : (trainInfo ? trainInfo.split('cars')[0].split(' ').at(-2) : null)
         const singleRow = trainInfo ? trainInfo.split('single row').length > 1 : false
-        const numSeatsPerRow = trainInfo ? trainInfo.split('Riders are arranged')[1].split(' ')[1] : null
+        const numSeatsPerRow = trainInfo ? trainInfo.replace('inline ', '').split('Riders are arranged')[1].split(' ')[1] : null
         const numRowsPerCar = trainInfo ? (singleRow ? 1 : trainInfo.split('rows')[0].split(' ').at(-2)) : null
 
         let numInsideSeatsPerRow = numSeatsPerRow
@@ -173,16 +160,16 @@ async function scrapeDetails(link) {
             }
         }
 
-        return { name, park, uniqueUrl, type, model, manufacturer, length, height, drop, speed, inversions, openingDate, numCars, numRowsPerCar, numInsideSeatsPerRow, numOutsideSeatsPerRow }
+        return { name, park, type, model, manufacturer, length, height, drop, speed, inversions, openingDate, numCars, numRowsPerCar, numInsideSeatsPerRow, numOutsideSeatsPerRow }
     })
 }
 
 async function scrapeImages(link) {
     const picLinks = await Driver.evaluate(async () => {
-        // Take a maximum of five images.
-        return Object.values(document.querySelectorAll('.pic-strip a')).slice(0, 5)
+        // Take a maximum of fifteen images.
+        return Object.values(document.querySelectorAll('.pic-strip a')).slice(0, 15)
     })
-    const urlList = []
+    const imgList = []
 
     for (let i = 1; i <= picLinks.length; i++) {
         await Promise.all([
@@ -190,13 +177,21 @@ async function scrapeImages(link) {
             Driver.waitForNavigation()
         ])
 
-        const url = await Driver.evaluate(() => {
+        const { url, width, height } = await Driver.evaluate(() => {
+            const bs = window.getComputedStyle(document.body)['background-size']
             const bg = window.getComputedStyle(document.body)['background-image']
+            const size = bs.split(',')[0]
+            const [ width, height ] = size.split(' ')
             const start = bg.indexOf('url("')
             const end = bg.indexOf('"),')
-            return bg.substring(start+5, end)
+            return {
+                url: bg.substring(start+5, end),
+                width: parseInt(width, 10),
+                height: parseInt(height, 10)
+            }
         })
-        urlList.push(url)
+
+        imgList.push({ url, width, height })
 
         await Promise.all([
             Driver.goto(link),
@@ -204,15 +199,14 @@ async function scrapeImages(link) {
         ])
     }
 
-    return urlList
+    return imgList
 }
 
-async function saveToDb(details, imageUrls) {
+async function saveToDb(details, imgList) {
     const coasterCmd = `
         INSERT INTO Coasters (
             Name,
             Park,
-            Url,
             Type,
             Model,
             Manufacturer,
@@ -225,7 +219,8 @@ async function saveToDb(details, imageUrls) {
             CarsPerTrain,
             RowsPerCar,
             InsideSeatsPerRow,
-            OutsideSeatsPerRow
+            OutsideSeatsPerRow,
+            Url
         )
         VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9,
@@ -234,21 +229,58 @@ async function saveToDb(details, imageUrls) {
         RETURNING *
     `
     const imageCmd = `
-        INSERT INTO CoasterImages (CoasterId, ImageUrl) VALUES ($1, $2)
+        INSERT INTO CoasterImages (CoasterId, ImageUrl, Width, Height) VALUES ($1, $2, $3, $4)
     `
 
     try {
-        const coasterResult = await SqlClient.query(coasterCmd, Object.values(details))
-        imageUrls.forEach(async (imageUrl) => {
-            await SqlClient.query(imageCmd, [coasterResult.rows[0].coasterid, imageUrl])
-        })
+        const coasterParams = Object.values(details).concat(await generateUrl(details.name, details.park))
+        const coasterResult = await SqlClient.query(coasterCmd, coasterParams)
+        for (let img of imgList) {
+            await SqlClient.query(imageCmd, [coasterResult.rows[0].coasterid, img.url, img.width, img.height])
+        }
         console.info(details)
-        console.info(imageUrls)
+        console.info(imgList)
         console.info('Inserted successfully.\n')
     } catch (err) {
         console.error('Failed inserting into DB:')
         console.error(err)
     }
+}
+
+/**
+ * Creates a sub url from a coaster name and the park it's from.
+ * Handles invalid url characters, international characters, and separates words by dash.
+ *
+ * Examples:
+ *
+ * name=Ride Name, park=Fun Park
+ * url=ride-name-fun-park
+ *
+ * name=Siskel & Ebert, park=Macy's Crazy Park
+ * url=siskel-ebert-macys-crazy-park
+ **/
+async function generateUrl(name, park) {
+    let uniqueUrl = `${name}@${park}`.toLowerCase()
+
+    const erasedChars = [ /\./g, /\,/g, /\&/g, /'/g, /’/g, /-/g, /(|)/g, /!/g, /:/g, /\*/g ]
+    const spaceChars = [ /   /g, /  /g ]
+    const dashChars = [ / /g, /@/g ]
+
+    erasedChars.forEach(c => uniqueUrl = uniqueUrl.replace(c, ''))
+    spaceChars.forEach(c => uniqueUrl = uniqueUrl.replace(c, ' '))
+    dashChars.forEach(c => uniqueUrl = uniqueUrl.replace(c, '-'))
+
+    const internationalCharMap = {
+        'á': 'a', 'à': 'a', 'ä': 'a',
+        'é': 'e', 'è': 'e', 'ë': 'e',
+        'ì': 'i', 'í': 'i',
+        'ó': 'o', 'ò': 'o', 'ö': 'o',
+        'ú': 'u', 'ù': 'u', 'ü': 'u',
+        'ń': 'n', 'ñ': 'n'
+    }
+    Object.keys(internationalCharMap).forEach(c => uniqueUrl = uniqueUrl.replace(c, internationalCharMap[c]))
+
+    return uniqueUrl
 }
 
 async function run() {
