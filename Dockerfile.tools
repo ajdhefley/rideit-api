@@ -17,11 +17,13 @@ COPY ./package*.json ./
 COPY ./tools/coaster-scraper ./tools/coaster-scraper
 COPY ./tools/image-encoder ./tools/image-encoder
 COPY ./tools/mock-data-creator ./tools/mock-data-creator
+COPY ./tools/mock-data-creator ./tools/coaster-ranker
 
 # Install dependencies
 RUN npm install --prefix tools/coaster-scraper
 RUN npm install --prefix tools/image-encoder
 RUN npm install --prefix tools/mock-data-creator
+RUN npm install --prefix tools/coaster-ranker
 
 # Bundle app source
 COPY . .

@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "name": "coaster-ranker",
+  "description": "Ranks coasters by rating / number of ratings.",
+  "main": "index.mjs",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "minimist": "^1.2.6",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {}
+}
