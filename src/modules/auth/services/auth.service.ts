@@ -3,7 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '../../../infrastructure/exceptions/unauthorized.exception';
-import { User } from 'src/modules/users/models/user.model';
+import { User } from '../../../modules/users/models/user.model';
 import axios from 'axios';
 
 @Injectable()

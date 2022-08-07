@@ -1,7 +1,12 @@
 import { Args, ArgsType, Field, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Coaster } from '../models/coaster.model';
 import { CoasterImage } from '../models/coaster-image.model';
-import { HttpService } from '../../../services/http.service';
+import { Review } from '../../../modules/reviews/models/review.model';
+import { Comment } from '../../../modules/comments/models/comment.model';
+import { CoasterOutboundService } from '../../../services/outbound/coaster-outbound.service';
+import { ReviewOutboundService } from '../../../services/outbound/review-outbound.service';
+import { CommentOutboundService } from '../../../services/outbound/comment-outbound.service';
+
 
 @ArgsType()
 class CoasterArgs {
@@ -17,25 +22,39 @@ class CoasterFilterArgs {
 
 @Resolver(of => Coaster)
 export class CoasterResolver {
-    constructor(private http: HttpService) { }
+    constructor(
+        private coasterService: CoasterOutboundService,
+        private commentService: CommentOutboundService,
+        private reviewService: ReviewOutboundService
+    ) { }
 
     @Query(returns => [Coaster])
     async coasters() {
-        return this.http.get(`${process.env.SERVICE_COASTER_URI}/coasters`);
+        return this.coasterService.getCoasters();
     }
 
     @Query(returns => Coaster)
     async coaster(@Args() args: CoasterArgs) {
-        return this.http.get(`${process.env.SERVICE_COASTER_URI}/coaster/${args.url}`);
+        return this.coasterService.getCoaster(args.url);
     }
 
     @Query(returns => [Coaster])
     async filteredCoaster(@Args() args: CoasterFilterArgs) {
-        return this.http.get(`${process.env.SERVICE_COASTER_URI}/coasters/search/${args.filter}`);
+        return this.coasterService.searchCoasters(args.filter);
     }
 
     @ResolveField(resolves => [CoasterImage])
     async images(@Parent() parent: Coaster) {
-        return this.http.get(`${process.env.SERVICE_COASTER_URI}/coaster/${parent.url}/images`);
+        return this.coasterService.getCoasterImages(parent.url);
+    }
+
+    @ResolveField(resolves => [Comment])
+    async comments(@Parent() parent: Coaster) {
+        return this.commentService.getComments(parent.url);
+    }
+
+    @ResolveField(resolves => [Review])
+    async reviews(@Parent() parent: Coaster) {
+        return this.reviewService.getReviews(parent.url);
     }
 }

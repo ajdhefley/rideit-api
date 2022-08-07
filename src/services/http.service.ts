@@ -20,6 +20,7 @@ export class HttpService {
     }
 
     post(url: string, body: any): Promise<any> {
+        console.log(url);
         return new Promise((resolve, reject) => {
             axios.post(url, body)
                 .then(resolve)

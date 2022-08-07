@@ -6,12 +6,12 @@ import { OAuthProviders } from '../oauth-providers';
 import AuthCookie from '../auth.cookie';
 import { OAuthUser } from '../../../modules/users/models/oauth-user.model';
 import { User } from '../../../modules/users/models/user.model';
-import { HttpService } from '../../../services/http.service';
+import { UserOutboundService } from '../../../services/outbound/user-outbound.service';
 
 @Controller('oauth')
 export class OAuthController {
     constructor(
-        private readonly http: HttpService,
+        private readonly userService: UserOutboundService,
         private readonly authService: AuthService
     ) { }
 
@@ -26,14 +26,14 @@ export class OAuthController {
     @Post('google/token')
     @UseGuards(GoogleGuard)
     async redirect(@Req() req, @Res() res) {
-        let oauthUser = await this.http.get<OAuthUser>(`${process.env.SERVICE_USER_URI}/oauth-user/${OAuthProviders.Google}/${req.user.id}`);
+        let oauthUser = await this.userService.getOAuthUser(OAuthProviders.Google, req.user.id);
 
         if (!oauthUser) {
-            const userInsertResult = await this.http.post(`${process.env.SERVICE_USER_URI}/user`, {
+            const userInsertResult = await this.userService.saveUser({
                 username: req.user.email
             });
 
-            const oauthUserInsertResult = await this.http.post(`${process.env.SERVICE_USER_URI}/oauth-user`, {
+            const oauthUserInsertResult = await this.userService.saveOAuthUser({
                 userId: userInsertResult.userId,
                 oauthIdentifier: req.user.id,
                 oauthServiceId: OAuthProviders.Google
@@ -42,7 +42,7 @@ export class OAuthController {
             oauthUser = oauthUserInsertResult;
         }
 
-        const { password: Password, ...Passwordless } = await this.http.get<User>(`${process.env.SERVICE_USER_URI}/user/${oauthUser.userId}`);
+        const { password: Password, ...Passwordless } = await this.userService.getUser(oauthUser.userId);
         const token = await this.authService.generateJwt(Passwordless);
 
         res.header('Access-Control-Allow-Credentials', 'true');

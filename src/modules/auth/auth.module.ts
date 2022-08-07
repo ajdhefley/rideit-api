@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { HttpService } from '../../services/http.service';
+import { UserOutboundService } from '../../services/outbound/user-outbound.service';
 import { UsersModule } from '../users/users.module';
 import { AccountController } from './controllers/account.controller';
 import { OAuthController } from './controllers/oauth.controller';
@@ -33,6 +34,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   ],
   providers: [
     HttpService,
+    UserOutboundService,
     AuthService,
     //FacebookStrategy,
     GoogleStrategy,

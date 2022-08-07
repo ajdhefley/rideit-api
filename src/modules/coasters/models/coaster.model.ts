@@ -51,6 +51,9 @@ export class Coaster {
     @Field(type => String, { nullable: false })
     url: string;
 
+    @Field(type => Int, { nullable: false })
+    rank: number;
+
     @Field(type => Int, { nullable: true })
     carsPerTrain: number;
 
