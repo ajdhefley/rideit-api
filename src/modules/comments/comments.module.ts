@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { Configuration } from '../../infrastructure/configuration';
 import { HttpService } from '../../services/http.service';
 import { CommentOutboundService } from '../../services/outbound/comment-outbound.service';
 import { UserOutboundService } from '../../services/outbound/user-outbound.service';
@@ -13,6 +14,7 @@ import { CommentResolver } from './resolvers/comment.resolver';
 
     ],
     providers: [
+        Configuration,
         HttpService,
         CommentOutboundService,
         UserOutboundService,

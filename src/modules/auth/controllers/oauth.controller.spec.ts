@@ -1,4 +1,4 @@
-import { NestJSTestSuite } from '@ajdhefley/test-suite-nest';
+import { NestJSTestSuite } from '@ajdhefley/slim-suite-nest';
 import { UserOutboundService } from '../../../services/outbound/user-outbound.service';
 import { AuthService } from '../services/auth.service';
 import { OAuthController } from './oauth.controller';

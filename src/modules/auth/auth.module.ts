@@ -2,6 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { Configuration } from '../../infrastructure/configuration';
 import { HttpService } from '../../services/http.service';
 import { UserOutboundService } from '../../services/outbound/user-outbound.service';
 import { UsersModule } from '../users/users.module';
@@ -33,6 +34,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     OAuthController
   ],
   providers: [
+    Configuration,
     HttpService,
     UserOutboundService,
     AuthService,

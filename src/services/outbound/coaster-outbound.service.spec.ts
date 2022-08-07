@@ -1,11 +1,13 @@
-import { NestJSTestSuite } from '@ajdhefley/test-suite-nest';
+import { NestJSTestSuite } from '@ajdhefley/slim-suite-nest';
+import { Configuration } from '../../infrastructure/configuration';
 import { HttpService } from '../http.service';
 import { CoasterOutboundService } from './coaster-outbound.service';
 
 new NestJSTestSuite(CoasterOutboundService)
-    .addMocks(HttpService)
-    .beforeEach(() => {
-        process.env.SERVICE_COASTER_URI = 'test';
+    .addMocks(Configuration, HttpService)
+    .beforeEach((service, mocks) => {
+        // Cast to any first since the properties are readonly
+        (mocks.get(Configuration) as any).services = { coaster: 'test' };
     })
     .addTest('should make http call to search coasters by query', (service, mocks) => {
         // Arrange

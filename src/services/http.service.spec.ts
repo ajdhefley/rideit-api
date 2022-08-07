@@ -1,4 +1,4 @@
-import { NestJSTestSuite } from '@ajdhefley/test-suite-nest';
+import { NestJSTestSuite } from '@ajdhefley/slim-suite-nest';
 import { HttpService } from './http.service';
 
 new NestJSTestSuite(HttpService)

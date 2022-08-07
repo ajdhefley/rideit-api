@@ -1,13 +1,14 @@
-import { NestJSTestSuite } from '@ajdhefley/test-suite-nest';
+import { NestJSTestSuite } from '@ajdhefley/slim-suite-nest';
+import { Configuration } from '../../infrastructure/configuration';
 import { HttpService } from '../http.service';
 import { UserOutboundService } from './user-outbound.service';
 
 new NestJSTestSuite(UserOutboundService)
-    .addMocks(HttpService)
-    .beforeEach(() => {
-        process.env.SERVICE_USER_URI = 'test';
+    .addMocks(Configuration, HttpService)
+    .beforeEach((service, mocks) => {
+        // Cast to any first since the properties are readonly
+        (mocks.get(Configuration) as any).services = { user: 'test' };
     })
-    
     .addTest('should make http call to get user', (service, mocks) => {
         // Arrange
         // Act
@@ -19,7 +20,7 @@ new NestJSTestSuite(UserOutboundService)
     .addTest('should make http call to get oauth user', (service, mocks) => {
         // Arrange
         // Act
-        service.getOAuthUser(6, 3);
+        service.getOAuthUser(6, '3');
 
         // Assert
         expect(mocks.get(HttpService).get).toHaveBeenCalledWith('test/oauth-user/6/3');
@@ -33,7 +34,7 @@ new NestJSTestSuite(UserOutboundService)
 
         // Assert
         expect(mocks.get(HttpService).post).toHaveBeenCalledWith('test/user', user);
-    })    })
+    })
     .addTest('should make http call to post oauth user', (service, mocks) => {
         // Arrange
         const oauthUser = { oauthUserId: 3 };

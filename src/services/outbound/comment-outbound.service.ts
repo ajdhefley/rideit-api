@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { Configuration } from '../../infrastructure/configuration';
 import { HttpService } from '../http.service';
 
 @Injectable()
 export class CommentOutboundService {
-    private readonly Host = process.env.SERVICE_COMMENT_URI;
-
-    constructor(private http: HttpService) {}
+    constructor(
+        private http: HttpService,
+        private config: Configuration
+    ) {}
 
     async getComments(coasterUrl: string): Promise<Comment[]> {
-        return this.http.get(`${this.Host}/comments/${coasterUrl}`);
+        return this.http.get(`${this.config.services.comment}/comments/${coasterUrl}`);
     }
 }

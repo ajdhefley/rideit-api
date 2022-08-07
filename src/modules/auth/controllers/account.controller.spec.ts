@@ -1,4 +1,4 @@
-import { NestJSTestSuite } from '@ajdhefley/test-suite-nest';
+import { NestJSTestSuite } from '@ajdhefley/slim-suite-nest';
 import { AccountController } from './account.controller';
 import { AuthService } from '../services/auth.service';
 import { JwtService } from '@nestjs/jwt';

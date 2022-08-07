@@ -1,6 +1,5 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
@@ -14,8 +13,6 @@ import { UsersModule } from './users/users.module';
 
 @Module({
     imports: [
-        ConfigModule.forRoot(),
-
         AuthModule,
 
         CommentsModule,

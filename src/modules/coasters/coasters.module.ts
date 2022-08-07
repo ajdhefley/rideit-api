@@ -6,6 +6,7 @@ import { CoasterOutboundService } from '../../services/outbound/coaster-outbound
 import { CommentOutboundService } from '../../services/outbound/comment-outbound.service';
 import { ReviewOutboundService } from '../../services/outbound/review-outbound.service';
 import { HttpService } from '../../services/http.service';
+import { Configuration } from '../../infrastructure/configuration';
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { HttpService } from '../../services/http.service';
 
     ],
     providers: [
+        Configuration,
         HttpService,
         CoasterOutboundService,
         CommentOutboundService,

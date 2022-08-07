@@ -1,12 +1,13 @@
 import { addColors, createLogger, format, transports, Logger as WinstonLogger } from 'winston';
 import { Colorizer, TransformableInfo } from 'logform';
 import { LoggerService } from '@nestjs/common';
+import { Configuration } from 'src/infrastructure/configuration';
 
 export class WinstonLoggerService implements LoggerService {
     private winstonLogger: WinstonLogger;
     private colorizer: Colorizer;
 
-    constructor() {
+    constructor(private config: Configuration) {
         this.winstonLogger = createLogger();
         this.colorizer = format.colorize();
 
@@ -24,32 +25,21 @@ export class WinstonLoggerService implements LoggerService {
             'date': 'grey'
         });
 
-        switch (process.env.NODE_ENV || 'development') {
-            case 'development': {
-                this.winstonLogger.add(
-                    new transports.Console({
-                        level: 'info',
-                        format: format.combine(format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), format.printf((ti: TransformableInfo) => {
-                            return ''
-                                .concat(this.colorizer.colorize('date', ti.timestamp))
-                                .concat(this.colorizer.colorize(`level-${ti.level}`, ` [${ti.level}] `))
-                                .concat(this.colorizer.colorize(`message-${ti.level}`, ti.message));
-                        }))
-                    })
-                );
-            }
-            case 'staging': {
-                this.winstonLogger.add(
-                    new transports.File({
-                        level: 'debug',
-                        filename: 'logs/message.log',
-                        format: format.simple()
-                    })
-                );
-            }
-            case 'production': {
+        if (config.isProduction) {
+            this.winstonLogger.add(
+                new transports.Console({
+                    level: 'info',
+                    format: format.combine(format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), format.printf((ti: TransformableInfo) => {
+                        return ''
+                            .concat(this.colorizer.colorize('date', ti.timestamp))
+                            .concat(this.colorizer.colorize(`level-${ti.level}`, ` [${ti.level}] `))
+                            .concat(this.colorizer.colorize(`message-${ti.level}`, ti.message));
+                    }))
+                })
+            );
+        }
+        else {
 
-            }
         }
 
         // Log errors to target file

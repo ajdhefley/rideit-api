@@ -3,15 +3,16 @@ import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
 import { WinstonLoggerService } from './infrastructure/logging/winston-logger.service';
 import { AppModule } from './modules/app.module';
+import { Configuration } from './infrastructure/configuration';
 
 (async function bootstrap() {
-    const app = await NestFactory.create(AppModule, {
-        logger: new WinstonLoggerService()
-    });
+    const app = await NestFactory.create(AppModule);
+    const config = app.get(Configuration);
 
     await app.use(cookieParser());
+    await app.useLogger(new WinstonLoggerService(config));
 
-    app.listen(process.env.PORT || 4040, process.env.HOST, () => {
-        Logger.log(`Server running on HOST=${process.env.HOST} PORT=${process.env.PORT || 4040}`);
+    app.listen(config.port, config.host, () => {
+        Logger.log(`Server running on HOST=${config.host} PORT=${config.port}`);
     });
 })();
