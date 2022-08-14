@@ -47,5 +47,6 @@ Build the application:
 | Name | Description |
 | :--- | :--- |
 | Coaster Scraper | Executes search on rcdb.com, and scans and stores data/images for thousands of coasters |
+| Coaster Ranker | Determines and updates rank (by average review rating and number of reviews) for all coasters |
 | Image Encoder | Iterates through all images for all coasters and stores Base64 encodings, to be used as blurred placeholder images |
 | Mock Data Creator | Generates and stores fake comments and reviews for all coasters |
