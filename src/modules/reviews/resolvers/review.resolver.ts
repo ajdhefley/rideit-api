@@ -6,28 +6,13 @@ import { ReviewTag } from '../models/review-tag.model';
 import { Review } from '../models/review.model';
 
 @ArgsType()
-class ReviewArgs {
+class ReviewQueryArgs {
     @Field(type => String, { nullable: false })
     coasterUrl: string;
 }
 
 @ArgsType()
-class ReviewCreateArgs {
-    @Field(type => Int)
-    coasterId: number;
-
-    @Field(type => Int)
-    userId: number;
-
-    @Field(type => String)
-    title: string;
-
-    @Field(type => String)
-    body: string;
-
-    @Field(type => Int)
-    rating: number;
-}
+class ReviewCreateArgs extends Review { }
 
 @Resolver(of => Review)
 export class ReviewResolver {
@@ -37,7 +22,7 @@ export class ReviewResolver {
     ) { }
 
     @Query(returns => [Review])
-    async reviews(@Args() args: ReviewArgs) {
+    async reviews(@Args() args: ReviewQueryArgs) {
         return this.reviewService.getReviews(args.coasterUrl);
     }
 

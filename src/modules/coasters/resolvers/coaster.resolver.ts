@@ -1,4 +1,4 @@
-import { Args, ArgsType, Field, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, ArgsType, Field, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Coaster } from '../models/coaster.model';
 import { CoasterImage } from '../models/coaster-image.model';
 import { Review } from '../../../modules/reviews/models/review.model';
@@ -7,9 +7,8 @@ import { CoasterOutboundService } from '../../../services/outbound/coaster-outbo
 import { ReviewOutboundService } from '../../../services/outbound/review-outbound.service';
 import { CommentOutboundService } from '../../../services/outbound/comment-outbound.service';
 
-
 @ArgsType()
-class CoasterArgs {
+class CoasterQueryArgs {
     @Field(type => String, { nullable: false })
     url?: string;
 }
@@ -33,16 +32,6 @@ export class CoasterResolver {
         return this.coasterService.getCoasters();
     }
 
-    @Query(returns => Coaster)
-    async coaster(@Args() args: CoasterArgs) {
-        return this.coasterService.getCoaster(args.url);
-    }
-
-    @Query(returns => [Coaster])
-    async filteredCoaster(@Args() args: CoasterFilterArgs) {
-        return this.coasterService.searchCoasters(args.filter);
-    }
-
     @ResolveField(resolves => [CoasterImage])
     async images(@Parent() parent: Coaster) {
         return this.coasterService.getCoasterImages(parent.url);
@@ -56,5 +45,15 @@ export class CoasterResolver {
     @ResolveField(resolves => [Review])
     async reviews(@Parent() parent: Coaster) {
         return this.reviewService.getReviews(parent.url);
+    }
+
+    @Query(returns => Coaster)
+    async coaster(@Args() args: CoasterQueryArgs) {
+        return this.coasterService.getCoaster(args.url);
+    }
+
+    @Query(returns => [Coaster])
+    async filteredCoaster(@Args() args: CoasterFilterArgs) {
+        return this.coasterService.searchCoasters(args.filter);
     }
 }

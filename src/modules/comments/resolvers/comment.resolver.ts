@@ -5,7 +5,7 @@ import { UserOutboundService } from '../../../services/outbound/user-outbound.se
 import { CommentOutboundService } from '../../../services/outbound/comment-outbound.service';
 
 @ArgsType()
-class CommentArgs {
+class CommentQueryArgs {
     @Field(type => String, { nullable: false })
     coasterUrl: string;
 }
@@ -18,7 +18,7 @@ export class CommentResolver {
     ) { }
 
     @Query(returns => [Comment])
-    async comments(@Args() args: CommentArgs) {
+    async comments(@Args() args: CommentQueryArgs) {
         return this.commentService.getComments(args.coasterUrl);
     }
 
