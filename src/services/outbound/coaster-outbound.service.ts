@@ -28,6 +28,10 @@ export class CoasterOutboundService {
     }
 
     async saveCoasterImage(url: string, coasterImage: any): Promise<CoasterImage> {
-        return this.http.post(`${this.config.services.coaster}/coaster/${url}/image`, { coasterImage });
+        return this.http.post(`${this.config.services.coaster}/coaster/${url}/image`, coasterImage);
+    }
+
+    async verifyCoasterImage(coasterImageId: number): Promise<CoasterImage> {
+        return this.http.post(`${this.config.services.coaster}/coaster/image/${coasterImageId}/verification`, { });
     }
 }

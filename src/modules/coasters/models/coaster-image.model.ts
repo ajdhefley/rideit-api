@@ -19,4 +19,7 @@ export class CoasterImage {
 
     @Field()
     height: number;
+
+    @Field()
+    verified: boolean;
 }

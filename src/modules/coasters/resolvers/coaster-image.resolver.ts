@@ -1,4 +1,4 @@
-import { Args, ArgsType, Field, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ArgsType, Field, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CoasterImage } from '../models/coaster-image.model';
 import { CoasterOutboundService } from '../../../services/outbound/coaster-outbound.service';
 
@@ -12,6 +12,12 @@ class CoasterImageQueryArgs {
 class CoasterImageCreateArgs extends CoasterImage {
     @Field(type => String, { nullable: false })
     coasterUrl: string;
+}
+
+@ArgsType()
+class CoasterImageValidateArgs {
+    @Field(type => Int, { nullable: false })
+    coasterImageId: number;
 }
 
 @Resolver(of => CoasterImage)
@@ -28,5 +34,10 @@ export class CoasterImageResolver {
     @Mutation(returns => CoasterImage)
     async createCoasterImage(@Args() args: CoasterImageCreateArgs) {
         return this.coasterService.saveCoasterImage(args.coasterUrl, args);
+    }
+
+    @Mutation(returns => CoasterImage)
+    async verifyCoasterImage(@Args() args: CoasterImageValidateArgs) {
+        return this.coasterService.verifyCoasterImage(args.coasterImageId);
     }
 }
