@@ -5,24 +5,23 @@
  * Also makes some calculations upon saving (such as 4 outside seats / 0 inside seats for Manufacturer=B&M, Model=Wing.)
  * 
  * Flags:
- *   db-name     = Name of DB being connected to
- *   db-host     = DB host
- *   db-user     = DB user
- *   db-password = DB password
- *   chrome-path = Path to chrome executable
- *   pages       = Which pages to store (all others are ignored)
+ *   api-host    = URI of the API used for reading/writing data
+ *   chrome-path = Path to chrome executable (not needed for local development)
+ *   pages       = Which search result pages to scan (all others are ignored)
  *   reset       = If present, clear the database first, otherwise add tool results to existing data
  *  
  *
  * Examples:
- *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase
- *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase --pages=10
- *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase --pages=11,14 --reset
+ *   node . --api-host=http://127.0.0.1:80
+ *   node . --api-host=http://127.0.0.1:80 --pages=10
+ *   node . --api-host=http://127.0.0.1:80 --pages=11,14 --reset
  **/
 
-import postgres from 'pg'
+
+import fetch from 'cross-fetch'
 import puppeteer from 'puppeteer'
 import minimist from 'minimist'
+import { ApolloClient, InMemoryCache, HttpLink, gql } from '@apollo/client'
 
 /**
  * Allows accessing arguments/flags by name instead of array index.
@@ -46,14 +45,11 @@ const Pages = Args.pages?.split(',')
 const BaseUrl = 'https://rcdb.com/r.htm?ex=on&st=93&ol=1&ot=2&cs=277'
 
 /**
- * Tool uses a single open connection.
+ * 
  **/
-const { Client } = postgres
-const SqlClient = new Client({
-    host     : Args['db-host'],
-    database : Args['db-name'],
-    user     : Args['db-user'],
-    password : Args['db-password']
+const GqlClient = new ApolloClient({
+    link: new HttpLink({ uri: Args['api-host'], fetch }),
+    cache: new InMemoryCache()
 })
 
 /**
@@ -177,7 +173,7 @@ async function scrapeImages(link) {
             Driver.waitForNavigation()
         ])
 
-        const { url, width, height } = await Driver.evaluate(() => {
+        const { imageUrl, width, height } = await Driver.evaluate(() => {
             const bs = window.getComputedStyle(document.body)['background-size']
             const bg = window.getComputedStyle(document.body)['background-image']
             const size = bs.split(',')[0]
@@ -185,13 +181,13 @@ async function scrapeImages(link) {
             const start = bg.indexOf('url("')
             const end = bg.indexOf('"),')
             return {
-                url: bg.substring(start+5, end),
+                imageUrl: bg.substring(start+5, end),
                 width: parseInt(width, 10),
                 height: parseInt(height, 10)
             }
         })
 
-        imgList.push({ url, width, height })
+        imgList.push({ imageUrl, width, height })
 
         await Promise.all([
             Driver.goto(link),
@@ -202,45 +198,63 @@ async function scrapeImages(link) {
     return imgList
 }
 
-async function saveToDb(details, imgList) {
-    const coasterCmd = `
-        INSERT INTO Coasters (
-            Name,
-            Park,
-            Type,
-            Model,
-            Manufacturer,
-            LengthInFt,
-            HeightInFt,
-            DropInFt,
-            SpeedInMph,
-            Inversions,
-            OpeningDate,
-            CarsPerTrain,
-            RowsPerCar,
-            InsideSeatsPerRow,
-            OutsideSeatsPerRow,
-            Url
-        )
-        VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8, $9,
-            $10, $11, $12, $13, $14, $15, $16
-        )
-        RETURNING *
-    `
-    const imageCmd = `
-        INSERT INTO CoasterImages (CoasterId, ImageUrl, Width, Height) VALUES ($1, $2, $3, $4)
-    `
+async function saveCoasterToDb(coaster) {
+    const { data } = await GqlClient.mutate({
+        mutation: gql`
+            mutation createCoaster() {
+                createCoaster() {
+                    coasterId
+                }
+            }
+        `,
+        variables: { ...coaster }
+    })
+    return data
+}
 
+async function saveCoasterImageToDb(coasterId, coasterImage) {
+    const { data } = await GqlClient.mutate({
+        mutation: gql`
+            mutation createCoasterImage($coasterId: Int!, $imageUrl: String!, $width: Int!, $height: Int!) {
+                createCoasterImage(coasterId: $coasterId, imageUrl: $imageUrl, width: $width, height: $height) {
+                    coasterImageId
+                }
+            }
+        `,
+        variables: { coasterId, ...coasterImage }
+    })
+    return data
+}
+
+async function verifyCoasterImageDb(coasterImage) {
+    const { data } = await GqlClient.mutate({
+        mutation: gql`
+            mutation verifyCoasterImage($coasterImageId: Int!) {
+                verifyCoasterImage(coasterImageId: $coasterImageId) {
+                    coasterImageId
+                }
+            }
+        `,
+        variables: { coasterImageId: coasterImage.coasterImageId }
+    })
+    return data
+}
+
+async function saveToDb(coaster, imgList) {
     try {
-        const coasterParams = Object.values(details).concat(await generateUrl(details.name, details.park))
-        const coasterResult = await SqlClient.query(coasterCmd, coasterParams)
+
+        coaster.url = await generateUrl(coaster.name, coaster.park)
+
+        const savedCoaster = await saveCoasterToDb(coaster)
         for (let img of imgList) {
-            await SqlClient.query(imageCmd, [coasterResult.rows[0].coasterid, img.url, img.width, img.height])
+            const savedImg = await saveCoasterImageToDb(savedCoaster.coasterId, img)
+            await verifyCoasterImageDb(savedImg) // Immediately verify image since it is coming straight from RCDB
         }
+
         console.info(details)
         console.info(imgList)
         console.info('Inserted successfully.\n')
+
     } catch (err) {
         console.error('Failed inserting into DB:')
         console.error(err)
@@ -284,8 +298,6 @@ async function generateUrl(name, park) {
 }
 
 async function run() {
-    SqlClient.connect()
-
     if (Args.reset) {
         console.info('Clearing data.')
         await SqlClient.query('TRUNCATE Coasters')

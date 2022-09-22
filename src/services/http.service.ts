@@ -6,24 +6,23 @@ export class HttpService {
     get<T>(url: string): Promise<T> {
         return new Promise((resolve, reject) => {
             axios.get<T>(url)
-                .then((result) => resolve(result.data))
+                .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });
     }
 
-    put(url: string): Promise<any> {
+    put(url: string, body: any): Promise<any> {
         return new Promise((resolve, reject) => {
-            axios.put(url)
-                .then(resolve)
+            axios.put(url, body)
+                .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });
     }
 
     post(url: string, body: any): Promise<any> {
-        console.log(url);
         return new Promise((resolve, reject) => {
             axios.post(url, body)
-                .then(resolve)
+                .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });
     }
@@ -31,7 +30,7 @@ export class HttpService {
     patch(url: string): Promise<any> {
         return new Promise((resolve, reject) => {
             axios.patch(url)
-                .then(resolve)
+                .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });
     }
@@ -39,7 +38,7 @@ export class HttpService {
     delete(url: string): Promise<any> {
         return new Promise((resolve, reject) => {
             axios.delete(url)
-                .then(resolve)
+                .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });
     }

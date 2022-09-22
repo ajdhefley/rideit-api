@@ -12,26 +12,30 @@ export class CoasterOutboundService {
     ) { }
 
     async searchCoasters(query: string): Promise<Coaster[]> {
-        return this.http.get(`${this.config.services.coaster}/coasters/search/${query}`);
+        return this.http.get(`${this.config.services.coaster}/coasters/${query}`);
     }
 
     async getCoasters(): Promise<Coaster[]> {
         return this.http.get(`${this.config.services.coaster}/coasters`);
     }
 
-    async getCoaster(url: string): Promise<Coaster> {
-        return this.http.get(`${this.config.services.coaster}/coaster/${url}`);
+    async getCoaster(coasterId: number): Promise<Coaster> {
+        return this.http.get(`${this.config.services.coaster}/coaster/${coasterId}`);
     }
 
-    async getCoasterImages(url: string): Promise<CoasterImage[]> {
-        return this.http.get(`${this.config.services.coaster}/coaster/${url}/images`);
+    async getCoasterByUrl(coasterUrl: string): Promise<Coaster> {
+        return this.http.get(`${this.config.services.coaster}/coaster/url/${coasterUrl}`);
     }
 
-    async saveCoasterImage(url: string, coasterImage: any): Promise<CoasterImage> {
-        return this.http.post(`${this.config.services.coaster}/coaster/${url}/image`, coasterImage);
+    async getCoasterImages(coasterId: number): Promise<CoasterImage[]> {
+        return this.http.get(`${this.config.services.coaster}/coaster/${coasterId}/images`);
     }
 
-    async verifyCoasterImage(coasterImageId: number): Promise<CoasterImage> {
-        return this.http.post(`${this.config.services.coaster}/coaster/image/${coasterImageId}/verification`, { });
+    async saveCoasterImage(coasterId: number, coasterImage: any): Promise<CoasterImage> {
+        return this.http.post(`${this.config.services.coaster}/coaster/${coasterId}/image`, coasterImage);
+    }
+
+    async updateCoasterImage(coasterId: number, coasterImage: any): Promise<CoasterImage> {
+        return this.http.put(`${this.config.services.coaster}/coaster/${coasterId}/image/${coasterImage.coasterImageId}`, coasterImage);
     }
 }

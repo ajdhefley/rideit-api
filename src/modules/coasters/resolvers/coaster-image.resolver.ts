@@ -9,15 +9,30 @@ class CoasterImageQueryArgs {
 }
 
 @ArgsType()
-class CoasterImageCreateArgs extends CoasterImage {
+class CoasterImageCreateArgs {
     @Field(type => String, { nullable: false })
     coasterUrl: string;
+
+    @Field(type => String, { nullable: false })
+    imageUrl: string;
+
+    @Field(type => Int, { nullable: false })
+    width: number;
+
+    @Field(type => Int, { nullable: false })
+    height: number;
 }
 
 @ArgsType()
-class CoasterImageValidateArgs {
+class CoasterImageUpdateArgs {
     @Field(type => Int, { nullable: false })
     coasterImageId: number;
+
+    @Field(type => String, { nullable: true })
+    base64: string;
+
+    @Field(type => Boolean, { nullable: true })
+    verified: boolean;
 }
 
 @Resolver(of => CoasterImage)
@@ -27,17 +42,19 @@ export class CoasterImageResolver {
     ) { }
 
     @Query(returns => [CoasterImage])
-    async coasterImages(@Args() args: CoasterImageQueryArgs) { 
-        return this.coasterService.getCoasterImages(args.coasterUrl);
+    async coasterImages(@Args() args: CoasterImageQueryArgs) {
+        const coaster = await this.coasterService.getCoasterByUrl(args.coasterUrl);
+        return this.coasterService.getCoasterImages(coaster.coasterId);
     }
 
     @Mutation(returns => CoasterImage)
     async createCoasterImage(@Args() args: CoasterImageCreateArgs) {
-        return this.coasterService.saveCoasterImage(args.coasterUrl, args);
+        const coaster = await this.coasterService.getCoasterByUrl(args.coasterUrl);
+        return this.coasterService.saveCoasterImage(coaster.coasterId, args);
     }
 
     @Mutation(returns => CoasterImage)
-    async verifyCoasterImage(@Args() args: CoasterImageValidateArgs) {
-        return this.coasterService.verifyCoasterImage(args.coasterImageId);
+    async updateCoasterImage(@Args() args: CoasterImageUpdateArgs) {
+        return this.coasterService.updateCoasterImage(0, args.coasterImageId);
     }
 }

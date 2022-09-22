@@ -2,16 +2,13 @@
  * Ranks coasters by rating / number of ratings.
  * 
  * Flags:
- *   db-name     = Name of DB being connected to
- *   db-host     = DB host
- *   db-user     = DB user
- *   db-password = DB password
+ *   api-host = URI of the API used for reading/writing data
  *
  * Examples:
- *   node . --db-host=localhost --db-user=root --db-password=password --db-name=MyDatabase
+ *   node . --api-host=http://127.0.0.1:80
  **/
 
-import postgres from 'pg'
+import axios from 'axios'
 import minimist from 'minimist'
 
 /**
@@ -20,15 +17,9 @@ import minimist from 'minimist'
 const Args = minimist(process.argv.slice(2))
 
 /**
- * Tool uses a single open connection.
+ * API host from args.
  **/
-const { Client } = postgres
-const SqlClient = new Client({
-    host     : Args['db-host'],
-    database : Args['db-name'],
-    user     : Args['db-user'],
-    password : Args['db-password']
-})
+const ApiHost = Args['api-host']
 
 async function rankCoasters() {
     const coasters = await getRankedCoasters()
@@ -47,6 +38,7 @@ async function getRankedCoasters() {
         GROUP BY c.coasterid, c.name
         ORDER BY SUM(r.rating) DESC, COUNT(r.rating) DESC
     `)
+    const result = await axios.get(`${ApiHost}/`)
     return result.rows
 }
 
