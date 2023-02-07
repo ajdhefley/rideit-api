@@ -11,7 +11,8 @@
 
 import plaiceholder from 'plaiceholder'
 import minimist from 'minimist'
-import { ApolloClient, InMemoryCache, HttpLink, gql } from '@apollo/client'
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs'
+import { HttpLink } from '@apollo/client/link/http/http.cjs'
 
 /**
  * Allows accessing arguments/flags by name instead of array index.

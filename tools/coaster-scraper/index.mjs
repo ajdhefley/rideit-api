@@ -5,6 +5,10 @@
  * Also makes some calculations upon saving (such as 4 outside seats / 0 inside seats for Manufacturer=B&M, Model=Wing.)
  * 
  * Flags:
+ *   db-host
+ *   db-user
+ *   db-password
+ *   db-name
  *   api-host    = URI of the API used for reading/writing data
  *   chrome-path = Path to chrome executable (not needed for local development)
  *   pages       = Which search result pages to scan (all others are ignored)
@@ -12,16 +16,17 @@
  *  
  *
  * Examples:
- *   node . --api-host=http://127.0.0.1:80
- *   node . --api-host=http://127.0.0.1:80 --pages=10
- *   node . --api-host=http://127.0.0.1:80 --pages=11,14 --reset
+ *   node . --db-host=127.0.0.1 --db-user=user --db-password=pass --db-name=coasterranker --api-host=http://127.0.0.1:80
+ *   node . --db-host=127.0.0.1 --db-user=user --db-password=pass --db-name=coasterranker --api-host=http://127.0.0.1:80 --pages=10
+ *   node . --db-host=127.0.0.1 --db-user=user --db-password=pass --db-name=coasterranker --api-host=http://127.0.0.1:80 --pages=11,14 --reset
  **/
 
-
+import postgres from 'pg'
 import fetch from 'cross-fetch'
 import puppeteer from 'puppeteer'
 import minimist from 'minimist'
-import { ApolloClient, InMemoryCache, HttpLink, gql } from '@apollo/client'
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core/core.cjs'
+import { HttpLink } from '@apollo/client/link/http/http.cjs'
 
 /**
  * Allows accessing arguments/flags by name instead of array index.
@@ -50,6 +55,20 @@ const BaseUrl = 'https://rcdb.com/r.htm?ex=on&st=93&ol=1&ot=2&cs=277'
 const GqlClient = new ApolloClient({
     link: new HttpLink({ uri: Args['api-host'], fetch }),
     cache: new InMemoryCache()
+})
+
+/**
+ * Tool uses a single open connection.
+ **/
+const { Client } = postgres
+const SqlClient = new Client({
+    host     : Args['db-host'],
+    database : Args['db-name'],
+    user     : Args['db-user'],
+    password : Args['db-password'],
+    ssl: {
+        rejectUnauthorized: false,
+    }
 })
 
 /**

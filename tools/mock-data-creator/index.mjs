@@ -2,13 +2,16 @@
  * Inserts fake reviews/comments into the DB for performance/UI testing.
  * 
  * Flags:
- *   api-host    = URI of the API used for reading/writing data
+ *   db-host
+ *   db-user
+ *   db-password
+ *   db-name
  *   reviews     = Average number of fake reviews to create per coaster
  *   comments    = Average number of comments to create per coaster
  *   reset       = If present, clear the database first, otherwise add tool results to existing data
  *
  * Examples:
- *   node . --api-host=http://127.0.0.1:80 --reviews=17 --comments=200 --reset
+ *   node . --db-host=127.0.0.1 --db-user=user --db-password=pass --db-name=coasterranker --reviews=17 --comments=200 --reset
  **/
 
 import postgres from 'pg'
@@ -21,10 +24,7 @@ import { getRandom } from '../toolUtils.mjs'
  **/
 const Args = minimist(process.argv.slice(2))
 
-/**
- * API host from args.
- **/
-const ApiHost = Args['api-host']
+console.log(Args['db-host'])
 
 /**
  * Random text generator.
@@ -37,6 +37,20 @@ const lorem = new LoremIpsum({
     wordsPerSentence: {
         max: 16,
         min: 4
+    }
+})
+
+/**
+ * Tool uses a single open connection.
+ **/
+const { Client } = postgres
+const SqlClient = new Client({
+    host     : Args['db-host'],
+    database : Args['db-name'],
+    user     : Args['db-user'],
+    password : Args['db-password'],
+    ssl: {
+        rejectUnauthorized: false,
     }
 })
 

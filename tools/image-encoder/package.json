@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@apollo/client": "^3.6.9",
     "pg": "^8.7.3",
     "plaiceholder": "^2.3.0",
     "sharp": "^0.30.6"
