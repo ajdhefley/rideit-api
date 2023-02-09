@@ -1,8 +1,8 @@
 import { Args, ArgsType, Field, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Coaster } from '../models/coaster.model';
 import { CoasterImage } from '../models/coaster-image.model';
-import { Review } from '../../../modules/reviews/models/review.model';
-import { Comment } from '../../../modules/comments/models/comment.model';
+import { Review } from '../../reviews/models/review.model';
+import { Comment } from '../../comments/models/comment.model';
 import { CoasterOutboundService } from '../../../services/outbound/coaster-outbound.service';
 import { ReviewOutboundService } from '../../../services/outbound/review-outbound.service';
 import { CommentOutboundService } from '../../../services/outbound/comment-outbound.service';

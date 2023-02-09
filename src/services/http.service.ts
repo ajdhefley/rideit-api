@@ -3,9 +3,16 @@ import axios from 'axios';
 
 @Injectable()
 export class HttpService {
+    private axiosConfig = {
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            "Access-Control-Allow-Origin": "*",
+        }
+    };
+
     get<T>(url: string): Promise<T> {
         return new Promise((resolve, reject) => {
-            axios.get<T>(url)
+            axios.get<T>(url, this.axiosConfig)
                 .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });
@@ -13,7 +20,7 @@ export class HttpService {
 
     put(url: string, body: any): Promise<any> {
         return new Promise((resolve, reject) => {
-            axios.put(url, body)
+            axios.put(url, body, this.axiosConfig)
                 .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });
@@ -21,7 +28,7 @@ export class HttpService {
 
     post(url: string, body: any): Promise<any> {
         return new Promise((resolve, reject) => {
-            axios.post(url, body)
+            axios.post(url, body, this.axiosConfig)
                 .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });
@@ -29,7 +36,7 @@ export class HttpService {
 
     patch(url: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            axios.patch(url)
+            axios.patch(url, this.axiosConfig)
                 .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });
@@ -37,7 +44,7 @@ export class HttpService {
 
     delete(url: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            axios.delete(url)
+            axios.delete(url, this.axiosConfig)
                 .then((response) => resolve(response.data))
                 .catch((err) => this.catchError(err, reject));
         });

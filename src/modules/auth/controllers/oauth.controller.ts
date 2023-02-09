@@ -4,8 +4,8 @@ import { GoogleGuard } from '../guards/google.guard';
 import { FacebookGuard } from '../guards/facebook.guard';
 import { OAuthProviders } from '../oauth-providers';
 import AuthCookie from '../auth.cookie';
-import { OAuthUser } from '../../../modules/users/models/oauth-user.model';
-import { User } from '../../../modules/users/models/user.model';
+import { OAuthUser } from '../../users/models/oauth-user.model';
+import { User } from '../../users/models/user.model';
 import { UserOutboundService } from '../../../services/outbound/user-outbound.service';
 
 @Controller('oauth')

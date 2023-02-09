@@ -11,6 +11,10 @@ export class CoasterOutboundService {
         private config: Configuration
     ) { }
 
+    async saveCoaster(coaster: Coaster) {
+        return this.http.post(`${this.config.services.coaster}/coaster`, coaster);
+    }
+
     async searchCoasters(query: string): Promise<Coaster[]> {
         return this.http.get(`${this.config.services.coaster}/coasters/${query}`);
     }
@@ -36,6 +40,6 @@ export class CoasterOutboundService {
     }
 
     async updateCoasterImage(coasterId: number, coasterImage: any): Promise<CoasterImage> {
-        return this.http.put(`${this.config.services.coaster}/coaster/${coasterId}/image/${coasterImage.coasterImageId}`, coasterImage);
+        return this.http.put(`${this.config.services.coaster}/coaster/${coasterId}/image`, coasterImage);
     }
 }

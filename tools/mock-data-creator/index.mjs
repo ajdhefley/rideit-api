@@ -24,8 +24,6 @@ import { getRandom } from '../toolUtils.mjs'
  **/
 const Args = minimist(process.argv.slice(2))
 
-console.log(Args['db-host'])
-
 /**
  * Random text generator.
  **/
