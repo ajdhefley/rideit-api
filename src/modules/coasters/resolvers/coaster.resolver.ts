@@ -29,7 +29,7 @@ export class CoasterResolver {
 
     @Query(returns => [Coaster])
     async coasters() {
-        return this.coasterService.getCoasters();
+        return await this.coasterService.getCoasters();
     }
 
     @ResolveField(resolves => [CoasterImage])
@@ -40,21 +40,23 @@ export class CoasterResolver {
 
     @ResolveField(resolves => [Comment])
     async comments(@Parent() parent: Coaster) {
-        return this.commentService.getComments(parent.url);
+        return await this.commentService.getComments(parent.url);
     }
 
     @ResolveField(resolves => [Review])
     async reviews(@Parent() parent: Coaster) {
-        return this.reviewService.getReviews(parent.url);
+        return await this.reviewService.getReviews(parent.url);
     }
 
     @Query(returns => Coaster)
     async coaster(@Args() args: CoasterQueryArgs) {
-        return this.coasterService.getCoasterByUrl(args.url);
+        return await this.coasterService.getCoasterByUrl(args.url);
     }
 
     @Query(returns => [Coaster])
     async filteredCoaster(@Args() args: CoasterFilterArgs) {
-        return this.coasterService.searchCoasters(args.filter);
+        const s = await this.coasterService.searchCoasters(args.filter);
+        console.log({ s})
+        return s;
     }
 }

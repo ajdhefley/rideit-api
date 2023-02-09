@@ -16,7 +16,7 @@ export class CoasterOutboundService {
     }
 
     async searchCoasters(query: string): Promise<Coaster[]> {
-        return this.http.get(`${this.config.services.coaster}/coasters/${query}`);
+        return this.http.get(`${this.config.services.coaster}/coasters/search/${query}`);
     }
 
     async getCoasters(): Promise<Coaster[]> {

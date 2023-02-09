@@ -19,11 +19,11 @@ export class CommentResolver {
 
     @Query(returns => [Comment])
     async comments(@Args() args: CommentQueryArgs) {
-        return this.commentService.getComments(args.coasterUrl);
+        return await this.commentService.getComments(args.coasterUrl);
     }
 
     @ResolveField(resolves => User)
     async author(@Parent() parent: Comment) {
-        return this.userService.getUser(parent.userId);
+        return await this.userService.getUser(parent.userId);
     }
 }

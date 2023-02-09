@@ -23,21 +23,21 @@ export class ReviewResolver {
 
     @Query(returns => [Review])
     async reviews(@Args() args: ReviewQueryArgs) {
-        return this.reviewService.getReviews(args.coasterUrl);
+        return await this.reviewService.getReviews(args.coasterUrl);
     }
 
     @ResolveField(resolves => [ReviewTag])
     async reviewTags(@Parent() parent: Review) {
-        return this.reviewService.getReviewTags(parent.reviewId);
+        return await this.reviewService.getReviewTags(parent.reviewId);
     }
 
     @ResolveField(resolves => User)
     async author(@Parent() parent: Review) {
-        return this.userService.getUser(parent.userId);
+        return await this.userService.getUser(parent.userId);
     }
 
     @Mutation(returns => Review)
     async createReview(@Args() args: ReviewCreateArgs) {
-        return this.reviewService.saveReview(args);
+        return await this.reviewService.saveReview(args);
     }
 }
