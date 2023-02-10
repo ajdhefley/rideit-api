@@ -34,7 +34,7 @@ export class CoasterResolver {
 
     @ResolveField(resolves => [CoasterImage])
     async images(@Parent() parent: Coaster) {
-        return (await this.coasterService.getCoasterImages(parent.coasterId))
+        return (await this.coasterService.getCoasterImages(parent.url))
             .filter((image) => image.verified);
     }
 

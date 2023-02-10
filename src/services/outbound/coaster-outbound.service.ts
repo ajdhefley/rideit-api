@@ -31,8 +31,8 @@ export class CoasterOutboundService {
         return this.http.get(`${this.config.services.coaster}/coaster/url/${coasterUrl}`);
     }
 
-    async getCoasterImages(coasterId: number): Promise<CoasterImage[]> {
-        return this.http.get(`${this.config.services.coaster}/coaster/${coasterId}/images`);
+    async getCoasterImages(coasterUrl: string): Promise<CoasterImage[]> {
+        return this.http.get(`${this.config.services.coaster}/coaster/url/${coasterUrl}/images`);
     }
 
     async saveCoasterImage(coasterId: number, coasterImage: any): Promise<CoasterImage> {

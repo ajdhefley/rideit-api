@@ -16,7 +16,6 @@ export class CoasterImageResolver {
 
     @Query(returns => [CoasterImage])
     async coasterImages(@Args() args: CoasterImageQueryArgs) {
-        const coaster = await this.coasterService.getCoasterByUrl(args.coasterUrl);
-        return this.coasterService.getCoasterImages(coaster.coasterId);
+        return await this.coasterService.getCoasterImages(args.coasterUrl);
     }
 }
